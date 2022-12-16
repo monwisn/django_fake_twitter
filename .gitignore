@@ -1,3 +1,11 @@
 djblogger/db.sqlite3
+
+.venv/
 .env
+venv/
+env/
 djbloggerenv/
+
+.idea
+.pytest_cache/
+__pycache__/
