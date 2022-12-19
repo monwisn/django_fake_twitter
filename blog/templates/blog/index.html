@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Blog title{% endblock %}
+
+{% block template %}
+    {% include 'navbar.html' %}
+    {% include 'components/splash.html' %}
+    <div class="container pt-5">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                {% include 'components/post-list-elements.html' %}
+            </div>
+            <div class="d-none d-lg-block col-4">
+            <!-- d-none means that smaller size not going to show, display none,
+            this element not going to show, lg- when a larger screen size is going to show,
+            4 because 4+8=12, 12 is whole width -->
+
+{#            {% include 'components/tag-cloud.html' %}  <!-- we don't use include because we already define this #}
+{#            inclusion in tag_cloud.py using decorator register_inclusion_tag -->#}
+                {% sidebar_tag_cloud %}  <!-- this correlate with function name in tag_cloud.py -->
+                {% include 'footer.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

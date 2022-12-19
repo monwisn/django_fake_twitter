@@ -1,0 +1,26 @@
+{% for post in posts %}
+    <!-- text-decoration-none means a href without underline -->
+    <a href="" class="text-decoration-none">
+    {% if forloop.last and page_obj.has_next %}
+        <div class="card border-0 pb-3 pb-sm-5 color" hx-get="{% url 'home_page' %}?page={{ page_obj.number|add:1 }}"
+             hx-trigger="revealed" hx-swap="afterend">
+    {% else %}
+        <!-- pb- padding bottom size 3, pb-sm-5- padding bottom when small screen 5 -->
+        <div class="card border-0 pb-3 pb-sm-5 color">
+    {% endif %}
+        <div class="row">
+            <div class="col-8">
+                <div class="card-body p-0">
+                    <div class="pb-2 text-body infscroll-author">{{ post.author }}</div>
+                    <h1 class="mb-1 text-body fw-bold infscroll-title">{{ post.title|truncatechars:80 }}</h1>  <!-- mb- margine bottom -->
+                    <h2 class="text-muted fs-6 d-none d-sm-block">{{ post.subtitle }}</h2>  <!-- text-muted text in grey -->
+                    <div class="text-muted infscroll-date">{{ post.updated_at|date:"M, d" }}</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <img src="https://picsum.photos/205/115" class="img-fluid float-end" alt="img">
+            </div>
+        </div>
+        </div>
+    </a>
+{% endfor %}
