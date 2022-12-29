@@ -57,7 +57,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            "builtins": ['blog.templatetags.tag_cloud']   # added for tags in global sense
+            "builtins": ['blog.templatetags.tag_cloud',
+                         'blog.templatetags.markdown_processing', ]   # added for tags in global sense
         },
     },
 ]
