@@ -12,6 +12,10 @@ class HomeView(ListView):
     # context_object_name: this is reference to the data that is being collected from this class here or this view
     paginate_by = 10
 
+    def get_queryset(self):
+        x = Post.objects.filter(status='published')
+        return x
+
     def get_template_names(self):
         if self.request.htmx:
             return "components/post-list-elements.html"
@@ -31,9 +35,7 @@ class TagListView(ListView):
 
     def get_queryset(self):
         # x = Post.objects.filter(tags__name=self.kwargs['tag'])
-        x = Post.objects.filter(tags__name__in=[self.kwargs['tag']])
-        print(x)
-
+        x = Post.objects.filter(status__exact='published', tags__name__in=[self.kwargs['tag']])
         return x
 
     def get_template_names(self):
@@ -58,12 +60,10 @@ class PostSearchView(ListView):
     def get_queryset(self):
         form = self.form_class(self.request.GET)  # grab data from form
         if form.is_valid():
-            return Post.objects.filter(title__icontains=form.cleaned_data['q'])
+            return Post.objects.filter(status__exact='published', title__icontains=form.cleaned_data['q'])
         return []
 
     def get_template_names(self):
         if self.request.htmx:
             return "components/post-list-elements-search.html"
         return 'blog/search.html'
-
-

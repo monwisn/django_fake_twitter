@@ -8,8 +8,8 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    password = 'test'
-    username = 'test'
+    password = "test"
+    username = "test"
     is_superuser = True
     # is_stuff = True
 
@@ -18,12 +18,12 @@ class PostFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Post
 
-    title = 'x'
-    subtitle = 'x'
-    slug = 'x'
+    title = "x"
+    subtitle = "x"
+    slug = "x"
     author = factory.SubFactory(UserFactory)
-    content = 'x'
-    status = 'published'
+    content = "x"
+    status = "published"
 
     @factory.post_generation
     def tags(self, create, extracted, **kwargs):

@@ -48,4 +48,3 @@ class PostFactory(factory.django.DjangoModelFactory):
                 'front-end',
                 'back-end',
             )
-
