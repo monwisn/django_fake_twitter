@@ -25,4 +25,3 @@ class TestListByTag:
         response = client.get(url)
         assert x.tags.all()[0].name == response.context['tag']
         # grabbing the tags associated to this post here (x = ...) that should match to response context tags
-
