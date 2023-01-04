@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView
 
 from blog.forms import PostSearchForm
 from blog.models import Post
@@ -67,3 +67,11 @@ class PostSearchView(ListView):
         if self.request.htmx:
             return "components/post-list-elements-search.html"
         return 'blog/search.html'
+
+
+class AddPostView(CreateView):
+    model = Post
+    fields = ['author', 'title', 'subtitle', 'slug', 'content', 'status', 'tags']
+
+    def get_template_names(self):
+        return 'blog/add_post.html'

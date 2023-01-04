@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "blog.apps.BlogConfig",
     "django_htmx",
     "taggit",
+    "crispy_forms",
 
 ]
 
