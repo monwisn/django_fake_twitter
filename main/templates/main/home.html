@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home page</title>
-</head>
-<body>
-hello world
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Twitter page{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}
+    <h3>Hello world</h3>
+
+{% endblock %}
