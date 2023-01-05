@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Musker</a>
@@ -8,7 +9,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+          <a class="nav-link" href="{% url 'main:profile_list' %}">Profile List</a>
+        </li>
+          <li class="nav-item">
+          <a class="nav-link" href="{% url 'home_page' %}">Blog</a>
         </li>
       </ul>
       <form class="d-flex" role="search">

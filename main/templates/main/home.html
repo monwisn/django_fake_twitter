@@ -4,6 +4,18 @@
 
 {% block template %}
     {% include 'navbar-twitter.html' %}
-    <h3>Hello world</h3>
+    <div class="container"><br/>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div>
 
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <h3>Hello world</h3>
+    </div>
 {% endblock %}

@@ -7,9 +7,9 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     follows = models.ManyToManyField('self', related_name='followed_by', symmetrical=False, blank=True)
-
     # symmetrical means that we can follow somebody, and they don't have to follow us back, they can but don't have to,
     # blank means that we don't have to follow anybody
+    date_modified = models.DateTimeField(User, auto_now=True)
 
     def __str__(self):
         return self.user.username
