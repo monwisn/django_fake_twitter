@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 import blog.views
 from . import views
@@ -10,4 +11,17 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('add-post/', blog.views.AddPostView.as_view(), name='add_post'),
     path('profile-list/', views.profile_list, name='profile_list'),
+
+    # extra context Attribute from ContentMixin = keyword argument for as_view()
+    # path('ex1/', views.TemplateView.as_view(template_name='ex1.html', extra_context={'title': 'Custom Title'})),
+    path('ex2/', views.Ex2View.as_view(), name='ex2'),
+    path('redirect/', RedirectView.as_view(url='https://youtube.com/veryacademy'), name='go_to_url'),
+    path('ex3/<int:pk>/', views.PostPreLoadTaskView.as_view(), name='redirect_task'),
+    path('ex4/<int:pk>/', views.SinglePostView.as_view(), name='single_post'),   # single post page
+    path('books/', views.BookView.as_view(), name='books'),
+    path('books/add/', views.AddBookView.as_view(), name='add_book'),
+    path('books/<slug:slug>/', views.BookDetailView.as_view(), name='book_detail'),
+    path('books/genre/<str:genre>/', views.GenreView.as_view(), name='genre'),
+    path('books/<slug:slug>/edit/', views.BookEditView.as_view(), name='book_edit'),
+
 ]

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Class-based views {% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    &nbsp;&nbsp;{{ data }}
+    <hr/>
+    &nbsp;&nbsp;Redirect to YouTube: <a href="{% url 'main:go_to_url' %}">redirect</a>
+    <hr/>
+    <div class="border-bottom border-1 border-dark">
+        <div class="container py-5 px-2">
+            {% for post in posts %}
+            <h4>Author: {{ post.author }}<br/><br/></h4>
+            <p><b>Title: {{ post.title }}</b></p><br/>
+            <p><b>Content: </b>{{ post.content|truncatechars:150 }}</p>
+            <p>Read the full text: <a href="{% url 'main:redirect_task' pk=post.id %}">{{ post.title }}</a></p>
+            <hr/><br/>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

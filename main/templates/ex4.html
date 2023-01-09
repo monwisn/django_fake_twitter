@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %} Single Post{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    <hr/>
+    <div class="border-bottom border-1 border-dark">
+        <div class="container py-5 px-2">
+            {{ posts.title }}<hr/>
+            <p><br/>{{ posts.content }}</p>
+
+        </div>
+    </div>
+{% endblock %}

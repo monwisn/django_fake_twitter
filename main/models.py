@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import slugify
 
 
 class Profile(models.Model):
@@ -28,3 +29,22 @@ def create_profile(sender, instance, created, **kwargs):
 
 # does the same thing as a receiver
 post_save.connect(create_profile, sender=User)
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=100)
+    slug = models.SlugField(null=True)
+    genre = models.CharField(max_length=30)
+    author = models.CharField(max_length=30)
+    isbn = models.IntegerField()
+    # isbn = models.CharField(max_length=13)
+    count = models.IntegerField(null=True, default=0)
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title

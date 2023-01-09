@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
-from .models import Profile
-
+from .models import Profile, Book
 
 # Unregister Groups
 admin.site.unregister(Group)
@@ -27,3 +26,7 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
 
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',), }
