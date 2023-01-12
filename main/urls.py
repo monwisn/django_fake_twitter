@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('add-post/', blog.views.AddPostView.as_view(), name='add_post'),
     path('profile-list/', views.profile_list, name='profile_list'),
+    path('profile/<int:pk>/', views.profile, name='profile'),
 
     # extra context Attribute from ContentMixin = keyword argument for as_view()
     # path('ex1/', views.TemplateView.as_view(template_name='ex1.html', extra_context={'title': 'Custom Title'})),

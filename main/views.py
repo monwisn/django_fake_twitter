@@ -5,10 +5,13 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView, RedirectView, DetailView, ListView
 from django.views.generic.edit import FormView, CreateView, UpdateView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required
 
 from blog.models import Post
 from main.forms import AddForm
 from main.models import Profile, Book
+from main.common import UserAccessMixin
 
 
 def home(request):
@@ -18,8 +21,18 @@ def home(request):
 
 def profile_list(request):
     if request.user.is_authenticated:
-        profiles = Profile.objects.exclude(user=request.user)
+        profiles = Profile.objects.all()
+        # profiles = Profile.objects.exclude(user=request.user)
         return render(request, 'main/profile_list.html', {'profiles': profiles})
+    else:
+        messages.success(request, 'You Must Be Logged In To View This Page...')
+        return redirect('main:home')
+
+
+def profile(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        return render(request, 'main/profile.html', {'profile': profile})
     else:
         messages.success(request, 'You Must Be Logged In To View This Page...')
         return redirect('main:home')
@@ -47,7 +60,7 @@ class Ex2View(TemplateView):
 
 
 class PostPreLoadTaskView(RedirectView):
-    # url = 'https://youtube.com/veryacademy/'
+    # url = 'https://youtube.com/something/'
     pattern_name = 'main:single_post'
     # permanent = HTTP status code returned (True = 301, False = 302, Default = False)
 
@@ -71,11 +84,13 @@ class SinglePostView(TemplateView):
 # class AddBookView(FormView):   # FormView
 #     template_name = 'main/add-book.html'
 #     form_class = AddForm  # that's going to be the form that we're going to build
-#     success_url = '/books/'  # this form view expecting us to have a user submit the form and then we're going to send them across to a new url
+#     success_url = '/books/'  # this form view expecting us to have a user submit the form, and then
+#     we're going to send them across to a new url
 #
 #     def from_valid(self, form):
 #         form.save()
 #         return super().form_valid(form)
+
 
 class AddBookView(CreateView):
     model = Book
@@ -138,7 +153,32 @@ class GenreView(ListView):
         return Book.objects.filter(genre__icontains=self.kwargs.get('genre'))
 
 
-class BookEditView(UpdateView):
+# class BookEditView(PermissionRequiredMixin, UpdateView):
+#
+#     raise_exception = False  # if True then 403 page will be shown and give use information that we need more permission
+#     # to access to this link page and resources, for security reasons we should use False to provide a 404 page instead
+#     # suggests that link doesn't exist
+#     permission_required = ('main.change_book', 'main.add_book',)
+#     # Permissions in Django follow the following naming sequence: {app}.{action}_{model_name}
+#     # action can be: add, change, delete, view
+#     permission_denied_message = ''
+#     login_url = '/books/'  # we have control of where we want to send the user back after access is denied
+#     redirect_field_name = 'next'  # we can just control this next item if we wanted to, redirect to next page
+#
+#     model = Book
+#     form_class = AddForm
+#     template_name = 'main/add-book.html'
+#     success_url = '/books/'
+
+
+class BookEditView(UserAccessMixin, UpdateView):
+
+    raise_exception = False
+    permission_required = 'main.change_book'
+    permission_denied_message = ''
+    login_url = '/books/'
+    redirect_field_name = 'next'
+
     model = Book
     form_class = AddForm
     template_name = 'main/add-book.html'
