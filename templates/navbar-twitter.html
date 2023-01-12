@@ -11,6 +11,11 @@
           <li class="nav-item">
               <a class="nav-link" href="{% url 'main:profile_list' %}">Profile List</a>
           </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'main:profile' request.user.id %}">My Profile</a>
+          </li>
+          {% endif %}
           <li class="nav-item">
               <a class="nav-link" href="{% url 'main:books' %}">Books</a>
           </li>

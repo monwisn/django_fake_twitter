@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    {% if profile %}
+        <div class="border-bottom border-1 border-dark">
+            <div class="container" style="text-align: center">
+                <h2>User Profile</h2>
+            </div>
+        </div><br/>
+        <div class="container text-left">
+            <div class="row">
+                <div class="col-8">
+                    <h3>{{ profile.user.username }}'s profile</h3>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <h5 class="card-header">Follows</h5>
+                        <div class="card-body">
+                            <p class="card-text">
+                                {% for following in profile.follows.all %}
+                                    <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a><br/>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div class="card">
+                        <h5 class="card-header">Followed By</h5>
+                        <div class="card-body">
+                            <p class="card-text">
+                                {% for following in profile.followed_by.all %}
+                                    <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a><br/>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
