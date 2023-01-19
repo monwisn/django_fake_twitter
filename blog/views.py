@@ -7,9 +7,10 @@ from blog.models import Post
 
 class HomeView(ListView):
     model = Post
-    # template_name = 'blog/index.html'
+    # template_name = 'blog/index.html'  # this is a variable that we can set up
     context_object_name = "posts"
     # context_object_name: this is reference to the data that is being collected from this class here or this view
+    # and being passed across to the template
     paginate_by = 10
 
     def get_queryset(self):

@@ -16,9 +16,9 @@
                                 <img src="{% static 'images/default_profile_img.jpg' %}" class="img-fluid rounded-start" alt="profile img"></div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ profile.user.username|capfirst }}
-                                        {% if profile.user.first_name|capfirst and profile.user.last_name|capfirst %}
-                                            <small>&nbsp;&nbsp;({{ profile.user.first_name }} {{ profile.user.last_name }})</small><br/>
+                                    <h5 class="card-title">{{ profile.user.username }}
+                                        {% if profile.user.first_name and profile.user.last_name %}
+                                            <small>&nbsp;&nbsp;({{ profile.user.first_name|capfirst }} {{ profile.user.last_name|capfirst }})</small><br/>
                                         {% endif %}
                                     </h5>
                                     <p class="card-text">@{{ profile.user.username|lower }}</p>

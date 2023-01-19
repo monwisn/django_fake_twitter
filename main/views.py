@@ -32,6 +32,19 @@ def profile_list(request):
 def profile(request, pk):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user_id=pk)
+        # Post Form logic
+        if request.method == 'POST':
+            # get current user ID
+            current_user_profile = request.user.profile
+            # get form data
+            action = request.POST['follow']  # from profile.html button name='follow'
+            # decide to follow or unfollow
+            if action == 'unfollow':
+                current_user_profile.follows.remove(profile)  # profile = pk
+            elif action == 'follow':
+                current_user_profile.follows.add(profile)
+            # save the profile
+            current_user_profile.save()
         return render(request, 'main/profile.html', {'profile': profile})
     else:
         messages.success(request, 'You Must Be Logged In To View This Page...')
