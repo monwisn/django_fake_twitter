@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 from .models import Book
 
@@ -14,3 +16,26 @@ class AddForm(forms.ModelForm):
             'author': forms.TextInput(attrs={'class': 'form-control'}),
             'isbn': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class SignUpForm(UserCreationForm):
+    # first_name = forms.CharField(
+    #     widget=forms.TextInput(attrs={'class': 'form-control form-control-lg'}), required=False, help_text='Optional')
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=30, required=True)
+    email = forms.CharField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'}), max_length=100, required=True)
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password')
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password Confirm')
+    birth_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        help_text='Optional. Format: DD-MM-YYYY', required=False, label='Birth Date')
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2', 'birth_date']
+        # widgets = {
+        #     'password': forms.PasswordInput(),
+        # }

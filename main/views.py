@@ -1,7 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import F
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, RedirectView, DetailView, ListView
 from django.views.generic.edit import FormView, CreateView, UpdateView
@@ -9,9 +14,10 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 
 from blog.models import Post
-from main.forms import AddForm
+from main.forms import AddForm, SignUpForm
 from main.models import Profile, Book
 from main.common import UserAccessMixin
+from djblogger.settings.base import LOGOUT_REDIRECT_URL
 
 
 def home(request):
@@ -25,7 +31,7 @@ def profile_list(request):
         # profiles = Profile.objects.exclude(user=request.user)
         return render(request, 'main/profile_list.html', {'profiles': profiles})
     else:
-        messages.success(request, 'You Must Be Logged In To View This Page...')
+        messages.info(request, 'You Must Be Logged In To View This Page...')
         return redirect('main:home')
 
 
@@ -47,12 +53,11 @@ def profile(request, pk):
             current_user_profile.save()
         return render(request, 'main/profile.html', {'profile': profile})
     else:
-        messages.success(request, 'You Must Be Logged In To View This Page...')
+        messages.info(request, 'You Must Be Logged In To View This Page...')
         return redirect('main:home')
 
 
 class Ex2View(TemplateView):
-
     """ TemplateResponseMixin
     Provides a mechanism to construct a TemplateResponse, given suitable context.
     Attributes:
@@ -75,6 +80,7 @@ class Ex2View(TemplateView):
 class PostPreLoadTaskView(RedirectView):
     # url = 'https://youtube.com/something/'
     pattern_name = 'main:single_post'
+
     # permanent = HTTP status code returned (True = 301, False = 302, Default = False)
 
     def get_redirect_url(self, *args, **kwargs):  # reverse the pattern_name if URL is not set
@@ -185,7 +191,6 @@ class GenreView(ListView):
 
 
 class BookEditView(UserAccessMixin, UpdateView):
-
     raise_exception = False
     permission_required = 'main.change_book'
     permission_denied_message = ''
@@ -196,3 +201,72 @@ class BookEditView(UserAccessMixin, UpdateView):
     form_class = AddForm
     template_name = 'main/add-book.html'
     success_url = '/books/'
+
+
+class SignUpView(SuccessMessageMixin, CreateView):
+    form_class = SignUpForm
+    template_name = 'main/signup.html'
+    success_url = reverse_lazy('main:home')
+    success_message = 'Your profile was created successfully.'
+
+    # def form_valid(self, form):
+    #     user = form.save()
+    #     if user is not None:
+    #         login(self.request, user)
+    #
+    #     return super(SignUpView, self).form_valid(form)
+
+
+# def signup(request):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             login(request, user)
+#             return redirect('main:home')
+#     else:
+#         form = SignUpForm()
+#     return render(request, 'main/signup.html', {'form': form})
+
+
+class LoginView(SuccessMessageMixin, FormView):
+    form_class = AuthenticationForm
+    success_url = reverse_lazy('main:home')
+    success_message = 'You\'re now logged in.'
+    template_name = 'main/signin.html'
+    redirect_field_name = REDIRECT_FIELD_NAME
+
+    def form_valid(self, form):
+        login(self.request, form.get_user())
+        return super(LoginView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid username or password.')
+        return self.render_to_response(self.get_context_data(form=form))
+
+# def signin(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#             messages.info(request, f"You are now logged in as {username}.")
+#             return redirect('main:home')
+#         else:
+#             return render(request, 'main/signin.html', {'error': 'Invalid login credentials.'})
+#     else:
+#         return render(request, 'main/signin.html', {'error': 'Invalid login credentials.'})
+
+
+class MyLogoutView(LogoutView):
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        messages.add_message(request, messages.INFO, 'You\' been successfully logged out.')
+        return response
+
+
+# def logout_view(request):
+#     logout(request)
+#     return redirect('main:home')

@@ -21,7 +21,7 @@
                                             <small>&nbsp;&nbsp;({{ profile.user.first_name|capfirst }} {{ profile.user.last_name|capfirst }})</small><br/>
                                         {% endif %}
                                     </h5>
-                                    <p class="card-text">@{{ profile.user.username|lower }}</p>
+                                    <a href="{% url 'main:profile' profile.user.id %}" class="card-text">@{{ profile.user.username|lower }}</a>
                                     <br/><br/>
                                     <p class="card-text"><small class="text-muted">Last Updated: {{ profile.date_modified }}</small></p>
                                 </div>

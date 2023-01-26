@@ -1,5 +1,6 @@
 from django.urls import path
 from django.views.generic import RedirectView
+from django.contrib.auth.views import LogoutView
 
 import blog.views
 from . import views
@@ -24,5 +25,9 @@ urlpatterns = [
     path('books/<slug:slug>/', views.BookDetailView.as_view(), name='book_detail'),
     path('books/genre/<str:genre>/', views.GenreView.as_view(), name='genre'),
     path('books/<slug:slug>/edit/', views.BookEditView.as_view(), name='book_edit'),
+    path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('signin/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.MyLogoutView.as_view(), name='logout'),
+    # path('logout/', LogoutView.as_view(next_page="main:home"), name='logout'),
 
 ]

@@ -3,16 +3,16 @@
 {% block title %}Twitter page{% endblock %}
 
 {% block template %}
-    {% include 'navbar-twitter.html' %}
-    <div class="container"><br/>
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="container">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    {{ message }}
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags %} {{ message|striptags|safe }} {% else %} {{ message }} {% endif %}
                     <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
-        {% endif %}
+        {% endif %}<br/>
         <h3 style="text-align: center">Twitter page</h3>
     </div>
 {% endblock %}

@@ -40,7 +40,6 @@ class Book(models.Model):
     # isbn = models.CharField(max_length=13)
     count = models.IntegerField(null=True, default=0)
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -48,3 +47,13 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Chat(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user_input = models.TextField(verbose_name="User Input", null=True)  # This is the user query.
+    ai_response = models.TextField(verbose_name="User Input", null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)  # This will store the time of each message input and response.
+
+    class Meta:
+        verbose_name = 'Chat'
