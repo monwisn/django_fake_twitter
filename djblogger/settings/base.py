@@ -1,4 +1,6 @@
 from pathlib import Path
+
+from django.contrib import messages
 from dotenv import load_dotenv
 import os
 
@@ -59,7 +61,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
             "builtins": ['blog.templatetags.tag_cloud',
-                         'blog.templatetags.markdown_processing', ]   # added for tags in global sense
+                         'blog.templatetags.markdown_processing', ]  # added for tags in global sense
         },
     },
 ]
@@ -116,3 +118,15 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Django messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-secondary',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block template %}
+    {% include 'navbar-twitter.html' %}
     <div class="container" style="max-width:600px">
         <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-            <h1 class="display-4">All Books</h1>
-            <p class="lead">A range of wonderful programming books to help you learn Python.</p>
+            <h1 class="display-4">Add Book</h1><hr/>
         </div>
-        <div class="py-5">
+        <div class="py-3">
             <div class="row">
                 <div class="col-12">
                     <form method="post">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <input type="submit" value="Submit">
+                        <input type="submit" value="Submit" style="float: right">
                     </form>
                 </div>
             </div>

@@ -16,9 +16,9 @@
                         <div class="card mb-4 box-shadow">
                             <div class="card-body">
                                 <h2 style="font-size:18px;font-weight:bold;min-height:42px;">
-                                    {{book.title|truncatechars:50}}</h2>
+                                    {{ book.title|truncatechars:50 }}</h2>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">{{ book.author }}</small>
+                                    <small class="text-muted">author: {{ book.author }}</small>
 {#                                    <small class="text-muted">{{ book.genre }}</small>#}
                                     <small><a class="text-muted" href="{% url 'main:genre' genre=book.genre %}">{{ book.genre }}</a></small>
                                     <small class="text-muted">{{ book.isbn }}</small>
