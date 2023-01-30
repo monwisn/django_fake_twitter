@@ -15,14 +15,17 @@ from django.contrib.auth.decorators import permission_required
 
 from blog.models import Post
 from main.forms import AddForm, SignUpForm
-from main.models import Profile, Book
+from main.models import Profile, Book, Tweet, Chat
 from main.common import UserAccessMixin
-from djblogger.settings.base import LOGOUT_REDIRECT_URL
+
+import openai
 
 
 def home(request):
-    return render(request, 'main/home.html')
-    # return HttpResponse('Hello world')
+    # if request.user.is_authenticated:
+    tweets = Tweet.objects.all().order_by('-created_at')
+
+    return render(request, 'main/home.html', {'tweets': tweets})
 
 
 def profile_list(request):
@@ -38,7 +41,8 @@ def profile_list(request):
 def profile(request, pk):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user_id=pk)
-        # Post Form logic
+        tweets = Tweet.objects.filter(user_id=pk)
+        # PostForm logic
         if request.method == 'POST':
             # get current user ID
             current_user_profile = request.user.profile
@@ -51,7 +55,7 @@ def profile(request, pk):
                 current_user_profile.follows.add(profile)
             # save the profile
             current_user_profile.save()
-        return render(request, 'main/profile.html', {'profile': profile})
+        return render(request, 'main/profile.html', {'profile': profile, 'tweets': tweets})
     else:
         messages.info(request, 'You Must Be Logged In To View This Page...')
         return redirect('main:home')
@@ -244,6 +248,7 @@ class LoginView(SuccessMessageMixin, FormView):
         messages.error(self.request, 'Invalid username or password.')
         return self.render_to_response(self.get_context_data(form=form))
 
+
 # def signin(request):
 #     if request.method == 'POST':
 #         username = request.POST['username']
@@ -270,3 +275,62 @@ class MyLogoutView(LogoutView):
 # def logout_view(request):
 #     logout(request)
 #     return redirect('main:home')
+
+
+def ai_chat(request):
+    user_input = ''
+    ai_response = ''
+    try:
+        if request.user.is_authenticated:
+            if request.method == 'POST':
+                user_input = request.POST.get('user_input')
+                ai_response = generate_response(user_input)
+                # saving user_input and ai_response in the database
+                Chat.objects.create(user=request.user, user_input=user_input, ai_response=ai_response)
+
+            # else:
+            #     # if user didn't enter any input nothing should be sent
+            #     user_input = ''
+            #     ai_response = ''
+            #     return redirect('main:chat')
+
+            # displaying the chat history base on user
+            chat_history = Chat.objects.filter(user=request.user)
+
+            return render(request, 'main/chat.html',
+                          {'user_input': user_input, 'chatbot_response': ai_response, 'chat_history': chat_history})
+
+        else:
+            messages.info(request, 'You Must Be Logged In To View This Page...')
+            return redirect('main:home')
+
+
+    except:
+        return redirect('main:home')
+
+
+openai.api_key = 'YOUR_API_KEY'
+
+
+# Generating response from OpenAI Library
+def generate_response(user_input):
+    prompt = f'User: {user_input}'
+
+    response = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=prompt,
+        max_tokens=1000,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+
+    message = response['choices'][0]['text']
+    return message
+
+
+# Clear chat
+def clear_chat(request):
+    # clear the chat conversation
+    Chat.objects.all().delete()
+    return redirect('main:chat')

@@ -13,6 +13,13 @@
                 </div>
             {% endfor %}
         {% endif %}<br/>
-        <h3 style="text-align: center">Twitter page</h3>
+        <h3 style="text-align: center">Twitter Page
+        </h3><hr/><br/>
+        <p>User tweets: </p>
+        {% for tweet in tweets %}
+            <div class="alert alert-dark" role="alert">
+                {{ tweet }}
+            </div><br/>
+        {% endfor %}
     </div>
 {% endblock %}

@@ -29,5 +29,6 @@ urlpatterns = [
     path('signin/', views.LoginView.as_view(), name='login'),
     path('logout/', views.MyLogoutView.as_view(), name='logout'),
     # path('logout/', LogoutView.as_view(next_page="main:home"), name='logout'),
-
+    path('chatbot/', views.ai_chat, name='chat'),
+    path('clear_chat/', views.clear_chat, name='clear'),
 ]
