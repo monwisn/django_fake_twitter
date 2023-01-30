@@ -309,7 +309,7 @@ def ai_chat(request):
         return redirect('main:home')
 
 
-openai.api_key = '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'
+openai.api_key = 'YOUR_API_KEY'
 
 
 # Generating response from OpenAI Library
