@@ -20,11 +20,14 @@
                         {% csrf_token %}
                         {{ form|crispy|linebreaks }}
                         <button class="btn btn-primary" type="submit" style="float: right">Register</button>
-                        <br/>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
-    <br><br>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already have an account? <a class="ml-2" href="{% url 'main:login' %}">Sign In Now</a>
+            </small><br><br>
+        </div>
+    </div><br/>
 {% endblock %}

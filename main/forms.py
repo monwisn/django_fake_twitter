@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Book
+from .models import Book, Tweet
 
 
 class AddForm(forms.ModelForm):
@@ -39,3 +39,19 @@ class SignUpForm(UserCreationForm):
         # widgets = {
         #     'password': forms.PasswordInput(),
         # }
+
+
+class TweetForm(forms.ModelForm):
+    body = forms.CharField(required=True,
+                           widget=forms.widgets.Textarea(
+                               attrs={
+                                   "placeholder": "Enter Your Tweet here...",
+                                   "class": "form-control",
+                               }
+                           ),
+                           label="",
+                           )
+
+    class Meta:
+        model = Tweet
+        exclude = ("user",)

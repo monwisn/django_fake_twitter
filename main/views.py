@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.forms import AuthenticationForm
@@ -14,7 +16,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 
 from blog.models import Post
-from main.forms import AddForm, SignUpForm
+from main.forms import AddForm, SignUpForm, TweetForm
 from main.models import Profile, Book, Tweet, Chat
 from main.common import UserAccessMixin
 
@@ -22,10 +24,21 @@ import openai
 
 
 def home(request):
-    # if request.user.is_authenticated:
-    tweets = Tweet.objects.all().order_by('-created_at')
+    if request.user.is_authenticated:
+        form = TweetForm(request.POST or None)
+        if request.method == 'POST':
+            if form.is_valid():
+                tweet = form.save(commit=False)
+                tweet.user = request.user
+                tweet.save()
+                messages.success(request, 'Your Tweet Has Been Posted.')
+                return redirect('main:home')
 
-    return render(request, 'main/home.html', {'tweets': tweets})
+        tweets = Tweet.objects.all().order_by('-created_at')
+        return render(request, 'main/home.html', {'tweets': tweets, 'form': form})
+    else:
+        tweets = Tweet.objects.all().order_by('-created_at')
+        return render(request, 'main/home.html', {'tweets': tweets})
 
 
 def profile_list(request):
@@ -304,12 +317,11 @@ def ai_chat(request):
             messages.info(request, 'You Must Be Logged In To View This Page...')
             return redirect('main:home')
 
-
     except:
         return redirect('main:home')
 
 
-openai.api_key = 'YOUR_API_KEY'
+openai.api_key = 'YOUR_OPENAI_API_KEY'
 
 
 # Generating response from OpenAI Library

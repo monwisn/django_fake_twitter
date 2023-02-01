@@ -15,7 +15,11 @@
                     {% if tweets %}
                         {% for tweet in tweets %}
                             <div class="alert alert-dark" role="alert">
-                                {{ tweet }}
+                                {{ tweet.body }}<br/>
+            <small class="text-muted">
+                {{ tweet.created_at }} By
+                @{{ tweet.user.username }}
+            </small>
                             </div><br/>
                         {% endfor %}
                     {% endif %}
