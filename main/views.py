@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.forms import AuthenticationForm
@@ -319,7 +321,7 @@ def ai_chat(request):
         return redirect('main:home')
 
 
-openai.api_key = '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'
+openai.api_key = 'YOUR_OPENAI_API_KEY'
 
 
 # Generating response from OpenAI Library
