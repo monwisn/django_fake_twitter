@@ -327,7 +327,7 @@ def ai_chat(request):
         return redirect('main:home')
 
 
-openai.api_key = 'YOUR_OPENAI_API_KEY'
+openai.api_key = 'YOUR_API_KEY'
 
 
 # Generating response from OpenAI Library
