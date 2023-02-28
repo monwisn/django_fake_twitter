@@ -11,6 +11,7 @@ class Profile(models.Model):
     # symmetrical means that we can follow somebody, and they don't have to follow us back, they can but don't have to,
     # blank means that we don't have to follow anybody
     date_modified = models.DateTimeField(User, auto_now=True)
+    profile_image = models.ImageField(null=True, blank=True, upload_to="images/")
 
     def __str__(self):
         return self.user.username

@@ -1,8 +1,7 @@
-import os
-
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import F
@@ -238,7 +237,13 @@ class SignUpView(SuccessMessageMixin, CreateView):
 #     if request.method == 'POST':
 #         form = SignUpForm(request.POST)
 #         if form.is_valid():
-#             user = form.save()
+#             form.save()
+#             username = form.cleaned_data['username']
+#             password_1 = form.cleaned_data['password1']
+#             password_2 = form.cleaned_data['password2']
+#             email = form.cleaned_data['email']
+#             birth_date = form.cleaned_data['birth_date']
+#             user = authenticate(username=username, password=password_1)
 #             login(request, user)
 #             return redirect('main:home')
 #     else:
@@ -262,7 +267,7 @@ class LoginView(SuccessMessageMixin, FormView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-# def signin(request):
+# def login(request):
 #     if request.method == 'POST':
 #         username = request.POST['username']
 #         password = request.POST['password']
@@ -272,7 +277,7 @@ class LoginView(SuccessMessageMixin, FormView):
 #             messages.info(request, f"You are now logged in as {username}.")
 #             return redirect('main:home')
 #         else:
-#             return render(request, 'main/signin.html', {'error': 'Invalid login credentials.'})
+#             return render(request, 'main/signin.html', {'error': 'Invalid Login credentials.'})
 #     else:
 #         return render(request, 'main/signin.html', {'error': 'Invalid login credentials.'})
 
@@ -287,6 +292,7 @@ class MyLogoutView(LogoutView):
 
 # def logout_view(request):
 #     logout(request)
+#     messages.info(request, f"You have been logged out!")
 #     return redirect('main:home')
 
 
@@ -321,7 +327,7 @@ def ai_chat(request):
         return redirect('main:home')
 
 
-openai.api_key = 'YOUR_OPENAI_API_KEY'
+openai.api_key = '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'
 
 
 # Generating response from OpenAI Library
@@ -346,3 +352,19 @@ def clear_chat(request):
     # clear the chat conversation
     Chat.objects.all().delete()
     return redirect('main:chat')
+
+
+def update_user(request):
+    if request.user.is_authenticated:
+        current_user = User.objects.get(id=request.user.id)
+        form = SignUpForm(request.POST or None, instance=current_user)
+        if form.is_valid():
+            form.save()
+            login(request, current_user)
+            messages.success(request, 'Your Profile Has Been Updated.')
+            return redirect('main:home')
+        return render(request, 'main/update_user.html', {'form': form})
+
+    else:
+        messages.info(request, 'You Must Be Logged In To View That Page.')
+        return redirect('main:home')

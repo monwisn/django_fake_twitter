@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "taggit",
     "crispy_forms",
+    "simple_chatbot",
 
 ]
 
@@ -44,6 +45,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    # "main.middleware.new_middleware",
 ]
 
 ROOT_URLCONF = "djblogger.urls"
@@ -112,6 +114,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -130,3 +135,10 @@ MESSAGE_TAGS = {
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
+
+SIMPLE_CHATBOT = {
+    'responses': (
+        ("main.responses.GreetingResponse", "Greeting"),
+        ("main.responses.GoodbyeResponse", "Goodbye"),
+    ),
+}
