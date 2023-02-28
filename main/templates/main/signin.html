@@ -6,57 +6,61 @@
 
 {% block template %}
     {% include 'navbar-twitter.html' %}
-    <div class="form-content my-3 p-3">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <div class="card shadow-lg border-0 rounded-lg mt-0 mb-3">
-                        <div class="card-header justify-content-center">
-                            <h3 class="font-weight-light my-4 text-left">Log In:
-                                <a href="{% url 'main:home' %}">
-                                    <button class="btn btn-secondary rounded-pill" type="button" style="float: right">Back home</button>
-                                </a>
-                            </h3><hr><br>
-                            {% if messages %}
-                                {% for message in messages %}
-                                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-                                        {{ message|striptags|safe }}
-                                        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {%  if user.is_authenticated %}<br/>
+        <h3 style="text-align: center">You're Already Logged In!</h3>
+    {% else %}
+        <div class="form-content my-3 p-3">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="card shadow-lg border-0 rounded-lg mt-0 mb-3">
+                            <div class="card-header justify-content-center">
+                                <h3 class="font-weight-light my-4 text-left">Log In:
+                                    <a href="{% url 'main:home' %}">
+                                        <button class="btn btn-secondary rounded-pill" type="button" style="float: right">Back home</button>
+                                    </a>
+                                </h3><hr><br>
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                                            {{ message|striptags|safe }}
+                                            <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                <form method="POST" class="form-control px-4 py-4">
+                                    {% csrf_token %}
+    {#                                {{ form|crispy }} #}
+                                    <div id="div_id_username" class="control-group">
+                                        <label for="id_username" class="control-label requiredField">Username
+                                            <span class="asteriskField"> * </span>
+                                        </label>
+                                        <div class="controls">
+                                            <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username"
+                                                   maxlength="150" class="text input textInput" required id="id_username" size="35">
+                                        </div><br>
                                     </div>
-                                {% endfor %}
-                            {% endif %}
-                            <form method="POST" class="form-control px-4 py-4">
-                                {% csrf_token %}
-{#                                {{ form|crispy }} #}
-                                <div id="div_id_username" class="control-group">
-                                    <label for="id_username" class="control-label requiredField">Username
-                                        <span class="asteriskField"> * </span>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username"
-                                               maxlength="150" class="text input textInput" required id="id_username" size="35">
-                                    </div><br>
-                                </div>
-                                <div id="div_id_password" class="control-group">
-                                    <label for="id_password" class="control-label requiredField">Password
-                                        <span class="asteriskField"> * </span>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="password" name="password" autocomplete="current-password"
-                                               class="text input textInput" required id="id_password" size="35">
+                                    <div id="div_id_password" class="control-group">
+                                        <label for="id_password" class="control-label requiredField">Password
+                                            <span class="asteriskField"> * </span>
+                                        </label>
+                                        <div class="controls">
+                                            <input type="password" name="password" autocomplete="current-password"
+                                                   class="text input textInput" required id="id_password" size="35">
+                                        </div>
                                     </div>
+                                    <button class="btn btn-primary" type="submit" style="float: right">Login</button><br><br>
+                                </form>
+                                <div class="border-top pt-3">
+                                    <small class="text-muted">
+                                        Need An Account? <a class="ml-2" href="{% url 'main:signup' %}">Sign Up Now</a>
+                                    </small><br><br>
                                 </div>
-                                <button class="btn btn-primary" type="submit" style="float: right">Login</button><br><br>
-                            </form>
-                            <div class="border-top pt-3">
-                                <small class="text-muted">
-                                    Need An Account? <a class="ml-2" href="{% url 'main:signup' %}">Sign Up Now</a>
-                                </small><br><br>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

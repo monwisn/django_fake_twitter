@@ -1,6 +1,7 @@
 from django.urls import path
 from django.views.generic import RedirectView
 from django.contrib.auth.views import LogoutView
+from simple_chatbot.views import SimpleChatbot
 
 import blog.views
 from . import views
@@ -26,9 +27,11 @@ urlpatterns = [
     path('books/genre/<str:genre>/', views.GenreView.as_view(), name='genre'),
     path('books/<slug:slug>/edit/', views.BookEditView.as_view(), name='book_edit'),
     path('signup/', views.SignUpView.as_view(), name='signup'),
-    path('signin/', views.LoginView.as_view(), name='login'),
+    path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.MyLogoutView.as_view(), name='logout'),
     # path('logout/', LogoutView.as_view(next_page="main:home"), name='logout'),
     path('chatbot/', views.ai_chat, name='chat'),
-    path('clear_chat/', views.clear_chat, name='clear'),
+    path('clear-chat/', views.clear_chat, name='clear'),
+    path('update-user/', views.update_user, name='update_user'),
+    # path('simple_chatbot/', SimpleChatbot.as_view(), name='chatbot'),
 ]

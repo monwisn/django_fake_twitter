@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}Update User{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}
+    <div class="container">
+        <div class="px-2 py-2 pt-md-5 pb-md-1 mx-auto text-center">
+            <h2 style="text-align: left">Update User:
+                <a href="{% url 'main:home' %}">
+                    <button class="btn btn-secondary rounded-pill" type="button" style="float: right">Back home</button>
+                </a>
+            </h2>
+        </div><hr/>
+        <div class="card bold-card p-4">
+            <div class="container py-2">
+                <div class="row">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy|linebreaks }}
+                        <button class="btn btn-primary" type="submit" style="float: right">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div><br/>
+{% endblock %}
