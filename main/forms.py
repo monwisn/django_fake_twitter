@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Book, Tweet
+from .models import Book, Tweet, Profile
 
 
 class AddForm(forms.ModelForm):
@@ -54,4 +54,40 @@ class TweetForm(forms.ModelForm):
 
     class Meta:
         model = Tweet
-        exclude = ("user",)
+        exclude = ("user", "likes")
+
+
+class ClearableFileInputCustom(forms.ClearableFileInput):
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['is_initial'] = False
+
+        return context
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    # profile_image = forms.ImageField(label='Profile Picture')
+
+    class Meta:
+        model = Profile
+        fields = ('profile_image', 'profile_bio', 'homepage_link', 'instagram_link', 'linkedin_link')
+        labels = {
+            'profile_image': 'Profile Picture',
+            'profile_bio': 'Profile Bio',
+            'homepage_link': ' ',
+            'instagram_link': ' ',
+            'linkedin_link': ' ',
+        }
+        widgets = {
+            'profile_image': ClearableFileInputCustom(attrs={'multiple': False}),
+            'profile_bio': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Profile Bio'}),
+            'homepage_link': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Website Link'}),
+            'instagram_link': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Instagram Link'}),
+            'linkedin_link': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Linkedin Link'}),
+
+        }
+
+
+
+
+

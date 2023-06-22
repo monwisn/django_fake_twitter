@@ -1,75 +1,210 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{#                <a class="btn btn-info right" href="{% url 'main:profile_list' %}">Back to profiles</a>#}
 
 {% block template %}
     {% include 'navbar-twitter.html' %}<br/>
     {% if profile %}
         <div class="border-bottom border-1 border-dark">
             <div class="container" style="text-align: left">
-                <h2>User Profile:</h2>
+                <h3>User Profile:</h3>
             </div>
         </div><br/>
         <div class="container text-center">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags %} {{ message|striptags|safe }} {% else %} {{ message }} {% endif %}
+                    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}<br/>
             <div class="row">
                 <div class="col-8">
-                    <h3>{{ profile.user.username }}'s profile</h3><br/>
+                    <h3>{{ profile.user.username }}'s tweets: </h3><br/>
                     {% if tweets %}
                         {% for tweet in tweets %}
                             <div class="alert alert-dark" role="alert">
-                                {{ tweet.body }}<br/>
-                                <small class="text-muted">
-                                    {{ tweet.created_at }} By
-                                    @{{ tweet.user.username }}
-                                </small>
-                            </div><br/>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            {% if profile.profile_image %}
+                                                <img src="{{ profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
+                                            {% else %}
+                                                <img src="{% static 'images/default_profile_img.jpg' %}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-11">
+                                            {{ tweet.body }}<br/>
+                                            <small class="text-muted">
+                                                {{ tweet.created_at }} By
+                                                @{{ tweet.user.username }}&nbsp;&nbsp;
+                                                {{ tweet.number_of_likes }}
+                                                {% if user in tweet.likes.all %}
+                                                    <a href="{% url 'main:tweet_like' tweet.id %}">
+                                                        <i class="fa-solid fa-heart" style="color: red"></i></a> <!-- unlike -->
+                                                {% else %}
+                                                    <a href="{% url 'main:tweet_like' tweet.id %}">
+                                                        <i class="fa fa-heart-o" style="color: red"></i></a> <!-- like -->
+                                                {% endif %}&nbsp;
+                                                <a href="{% url 'main:tweet_show' tweet.id %}">
+                                                    <i class="fa-solid fa-share" style="color: grey"></i></a> <!-- share -->
+                                                <br/>
+                                                {% if tweet.created_at != tweet.updated_at %}
+                                                    [Last updated: {{ tweet.updated_at }}]
+                                                {% endif %}
+                                            </small>
+                                        </div><br/>
+                                    </div>
+                                </div>
+                            </div>
                         {% endfor %}
+                        <hr><p class="card-text"><small class="text-muted">Tweets created: {{ tweets.count }}</small></p>
                     {% endif %}
                 </div>
                 <div class="col-4">
-                    {% if profile.profile_image %}
-                        <img src="{{ profile.profile_image.url }}" style="width:180px; height:180px; border-radius:10%" alt="profile-img">
+                    {% if request.user.id == profile.id %}
+                        {% if profile.profile_image %}
+                            <img src="{{ profile.profile_image.url }}" class="rounded-circle" style="width:180px; height:180px;" alt="profile-img">
+{#                            <img src="{{ profile.profile_image.url }}" style="width:180px; height:180px; border-radius:10%" alt="profile-img">#}
+                        {% endif %}<br/><br/>
+                        <!-- Profile change image form -->
+                         <form method="POST" enctype="multipart/form-data">
+                             {% csrf_token %}
+                             {{ p_form.profile_image }}
+                             <br/><br/><button class="btn btn-outline-info" type="submit">Change profile image</button>
+                         </form>
+                    {% else %}
+                        <img src="{% static 'images/default_profile_img.jpg' %}" class="rounded-circle" width="180px" height="180px" alt="default-img"><br/>
+                    {% endif %}<br/>
+                    {% if profile.homepage_link %}
+                        <a href="{{ profile.homepage_link }}" target="new"><i class="fa-solid fa-link fa-lg" style="color: dimgrey"></i></a>
+                    {% endif %}&nbsp;&nbsp;
+                    {% if profile.instagram_link %}
+                        <a href="{{ profile.instagram_link }}" target="new"><i class="fa-brands fa-instagram fa-lg" style="color: deeppink"></i></a>
+                    {% endif %}&nbsp;&nbsp;
+                    {% if profile.linkedin_link %}
+                        <a href="{{ profile.linkedin_link }}" target="new"><i class="fa-brands fa-linkedin fa-lg" style="color: blue"></i></a>
                     {% endif %}
                     <br/><br/>
+                    {% if profile.profile_bio %}
+                        <p style="text-align: justify">{{ profile.profile_bio }}</p>
+                    {% endif %}
+                    <br/>
                     <div class="card">
-                        <h5 class="card-header">Follows</h5>
+                        <h5 class="card-header">Follows:</h5>
                         <div class="card-body">
                             <p class="card-text">
-                                {% for following in profile.follows.all %}
-                                    <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a><br/>
+                                {% for following in profile.follows.all|slice:3 %}
+                                    {% if request.user.id == profile.user.id %}
+                                        <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a>
+                                        &nbsp;<a href="{% url 'main:unfollow' following.user.id %}"><i class="fa fa-undo small" style="color: darkred" aria-hidden="true"></i></a><br/>
+                                    {% else %}
+                                        <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a><br/>
+                                    {% endif %}
                                 {% endfor %}
                             </p>
+                            <a href="{% url 'main:follows' profile.user.id %}" class="btn btn-outline-secondary">See All..</a>
                         </div>
+                    <div class="card-footer text-start">
+                        <small style="color: dimgray">Following: <a href="{% url 'main:follows' profile.user.id %}"> {{ profile.follows.count }} Accounts</a></small>
+                    </div>
                     </div>
                     <br/><br/>
                     <div class="card">
-                        <h5 class="card-header">Followed By</h5>
+                        <h5 class="card-header">Followed By:</h5>
                         <div class="card-body">
                             <p class="card-text">
-                                {% for following in profile.followed_by.all %}
-                                    <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a><br/>
+                                {% for following in profile.followed_by.all|slice:3 %}
+                                    <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a>&nbsp;&nbsp;
+                                    <!-- Follow Back User Profile -->
+                                    {% if following in profile.follows.all %}
+                                        &nbsp;<a href="{% url 'main:unfollow' following.user.id %}"><i class="fa fa-user-minus small" style="color: darkred" aria-hidden="true"></i></a>
+                                    {% else %}
+                                        &nbsp;<a href="{% url 'main:follow' following.user.id %}"><i class="fa fa-user-plus small" style="color: green" aria-hidden="true"></i></a>
+                                    {% endif %}<br/>
                                 {% endfor %}
+                                <span id="points">...</span>
+                                <span id="moreElements">
+                                    {% for following in profile.followed_by.all|slice:"3:" %}
+                                        <a href="{% url 'main:profile' following.user.id %}">@{{ following }}</a>&nbsp;&nbsp;
+                                        {% if following in profile.follows.all %}
+                                            &nbsp;<a href="{% url 'main:unfollow' following.user.id %}"><i class="fa fa-user-minus small" style="color: darkred" aria-hidden="true"></i></a>
+                                        {% else %}
+                                            &nbsp;<a href="{% url 'main:follow' following.user.id %}"><i class="fa fa-user-plus small" style="color: green" aria-hidden="true"></i></a>
+                                        {% endif %}<br/>
+                                    {% endfor %}
+                                </span>
                             </p>
+                            <button class="btn btn-outline-secondary" onclick="toggleText()" id="elementsButton">Show More</button>
                         </div>
+                    <div class="card-footer text-start">
+                        <small style="color: dimgray">Followed by: <a href="{% url 'main:followers' profile.user.id %}"> {{ profile.followed_by.count }} Accounts</a></small>
+                    </div>
                     </div><br/>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <!-- if this profile is in your list of followed profiles you can then unfollow, if not you can follow -->
-                        {% if profile in user.profile.follows.all %}
-                            <button class="btn btn-outline-danger" name="follow" value="unfollow" type="submit">
-                            Unfollow @{{ profile.user.username|lower }}
-                            </button>
-                        {% else %}
-                            <button class="btn btn-outline-success" name="follow" value="follow" type="submit">
-                            Follow @{{ profile.user.username|lower }}
-                            </button>
-                        {% endif %}
-                    </form><br/>
+                    {% if request.user.id != profile.user.id %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            <!-- if this profile is in your list of followed profiles you can then unfollow, if not you can follow -->
+                            {% if profile in user.profile.follows.all %}
+                                <button class="btn btn-outline-danger" name="follow" value="unfollow" type="submit">
+                                    Unfollow @{{ profile.user.username|lower }}
+                                </button>
+                            {% else %}
+                                <button class="btn btn-outline-success" name="follow" value="follow" type="submit">
+                                    Follow @{{ profile.user.username|lower }}
+                                </button>
+                            {% endif %}
+                        </form><br/>
+                    {% endif %}
                     <!-- Check for correct user -->
-                    {% if request.user.id == profile.user.id%}
-                        <a href="{% url 'main:update_user' %}" class="btn btn-outline-secondary">Update Profile</a>
+                    {% if request.user.id == profile.user.id %}
+                        <a href="{% url 'main:update_user' %}" class="btn btn-outline-info">Update Profile</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     {% endif %}
     <br/>
+
+    <style>
+    #moreElements {
+        display: none;
+    }
+    </style>
+    <script>
+        function toggleText() {
+            // Get all the elements from the page
+            let points =
+                document.getElementById("points");
+            let moreElements =
+                document.getElementById("moreElements");
+            let elementsButton =
+                document.getElementById("elementsButton");
+
+            if (points.style.display === "none") {
+                // Hide the text between the span elements
+                moreElements.style.display = "none";
+
+                // Show the dots after the text
+                points.style.display = "inline";
+
+                // Change the text on button to 'Show More'
+                elementsButton.innerHTML = "Show More";
+            }
+
+            else {
+                // Show the text between the span elements
+                moreElements.style.display = "inline";
+
+                // Hide the dots after the text
+                points.style.display = "none";
+
+                // Change the text on button to 'Show Less'
+                elementsButton.innerHTML = "Show Less";
+            }
+        }
+    </script>
 {% endblock %}

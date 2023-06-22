@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/><br/>
+    <div class="container">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.media }}
+{#            {{ form|crispy }}#}
+            {% for field in form %}
+                {% if field.name == 'start_time' %}
+                    {{ field.label|capfirst }}
+                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                        {{ form.start_time }}
+                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar" style="height:24px; padding-top:4px"></i></div>
+                        </div>
+                    </div><br/>
+                {% else %}
+                    {{ field.label|capfirst }}
+                    {{ field.as_widget|linebreaks }}
+                    {{ field.help_text }}
+                {% endif %}
+            {% endfor %}
+            <button class="btn btn-primary" type="submit" style="float: right">Make reservation</button>
+        </form>
+    </div>
+    <script>
+        $(function () {
+            $("#datetimepicker1").datetimepicker({
+                format: 'DD-MM-YYYY  HH:mm',
+            });
+        });
+    </script><br/><br/>
+{% endblock %}
+
+
+

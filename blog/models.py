@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from taggit.managers import TaggableManager
 
@@ -21,6 +22,11 @@ class Post(models.Model):
     count = models.IntegerField(null=True)
 
     tags = TaggableManager()
+
+    @property
+    def short_title(self):
+        return truncatechars(self.title, 80)
+
 
     def get_absolute_url(self):
         return reverse('post_single', args=[self.slug])

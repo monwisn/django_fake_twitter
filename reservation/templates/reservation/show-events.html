@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+{% block title %}Show Calendar Events{% endblock %}
+{% block template %}
+    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="container">
+        <h4 style="text-align: center">Calendar Reservations: </h4><hr><br/>
+        <div class="container">
+            <div class="clearfix" style="text-align: center">
+                <a class="btn btn-primary right" href="{% url 'reservation:new_show_events' %}"> New Reservation </a>
+                <a class="btn btn-info left" href="{% url 'reservation:show_events' %}?{{ previous_month }}"> Previous Month </a>
+                <a class="btn btn-info right" href="{% url 'reservation:show_events' %}?{{ next_month }}"> Next Month </a>
+            </div>
+            <div class="calendar" style="text-align: center">
+                {{ calendar|safe }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
