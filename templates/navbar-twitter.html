@@ -1,3 +1,4 @@
+{% load static %}
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
@@ -31,6 +32,16 @@
           <li class="nav-item">
               <a class="nav-link" href="{% url 'home_page' %}">Blog</a>
           </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Calendar
+          </a>
+          <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'reservation:calendar' %}">Make a reservation</a></li>
+              <li><a class="dropdown-item" href="{% url 'reservation:events' %}">Manage Calendar Events</a></li>
+              <li><a class="dropdown-item" href="{% url 'reservation:show_events' %}">Show Calendar Reservations</a></li>
+          </ul>
+        </li>
           {% if not user.is_authenticated %}
               <li class="nav-item">
                   <a class="nav-link" href="{% url 'main:signup' %}">Register</a>
@@ -44,6 +55,19 @@
               </li>
           {% endif %}
       </ul>
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-link navbar-brand">
+                    <a href="{% url 'main:profile' request.user.id %}">
+                        {% if user.profile.profile_image %}
+                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" width="40" height="40" alt="profile-img">
+                        {% else %}
+                            <img src="{% static 'images/default_profile_img.jpg' %}" class="rounded-circle" width="40" height="40" alt="default-img">
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
     </div>
   </div>
 </nav>

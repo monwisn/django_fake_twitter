@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
+from django.db.models import Count
+
 from .models import Profile, Book, Tweet
 
 
@@ -27,7 +29,12 @@ class ProfileInline(admin.StackedInline):
 # admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
 
-admin.site.register(Tweet)
+
+@admin.register(Tweet)
+class TweetAdmin(admin.ModelAdmin):
+    model = Tweet
+    fields = ['user', 'body', 'likes']
+    list_display = ['user', 'short_body', 'created_at', 'get_likes', 'updated_at']
 
 
 @admin.register(Book)

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import slugify, truncatechars
 
 
 class Profile(models.Model):
@@ -12,6 +12,10 @@ class Profile(models.Model):
     # blank means that we don't have to follow anybody
     date_modified = models.DateTimeField(User, auto_now=True)
     profile_image = models.ImageField(null=True, blank=True, upload_to="images/")
+    profile_bio = models.CharField(null=True, blank=True, max_length=1000)
+    homepage_link = models.CharField(null=True, blank=True, max_length=100)
+    instagram_link = models.CharField(null=True, blank=True, max_length=100)
+    linkedin_link = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
         return self.user.username
@@ -63,12 +67,40 @@ class Chat(models.Model):
 # create tweets model
 class Tweet(models.Model):
     user = models.ForeignKey(User, related_name="tweets", on_delete=models.DO_NOTHING)
-    body = models.CharField(max_length=250)
+    body = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(User, related_name="tweet_like", blank=True)
+
+    # keep track or count of likes
+    def number_of_likes(self):
+        return self.likes.count()
+
+    # return amount of likes in admin
+    def get_likes(self):
+        return len([like for like in self.likes.all()])
+
+    # displays renamed get_likes method in admin
+    get_likes.short_description = 'Likes'
+
+    # return short version (100 characters) of body in admin
+    @property
+    def short_body(self):
+        return truncatechars(self.body, 100)
+
 
     def __str__(self):
-        return (
-            f'{self.user} '
-            f'({self.created_at:%Y-%m-%d %H:%M}): '
-            f'{self.body}...'
-        )
+        return f'{self.user}'
+
+    # def __str__(self):
+    #     return (
+    #         f'{self.user} '
+    #         f'({self.created_at:%Y-%m-%d %H:%M}): '
+    #         f'{self.body}...'
+    #     )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+

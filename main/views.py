@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.forms import AuthenticationForm
@@ -6,8 +8,8 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
-from django.http import HttpResponse
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.views.generic import TemplateView, RedirectView, DetailView, ListView
 from django.views.generic.edit import FormView, CreateView, UpdateView
@@ -15,7 +17,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 
 from blog.models import Post
-from main.forms import AddForm, SignUpForm, TweetForm
+from main.forms import AddForm, SignUpForm, TweetForm, ProfileUpdateForm
 from main.models import Profile, Book, Tweet, Chat
 from main.common import UserAccessMixin
 
@@ -38,39 +40,6 @@ def home(request):
     else:
         tweets = Tweet.objects.all().order_by('-created_at')
         return render(request, 'main/home.html', {'tweets': tweets})
-
-
-def profile_list(request):
-    if request.user.is_authenticated:
-        profiles = Profile.objects.all()
-        # profiles = Profile.objects.exclude(user=request.user)
-        return render(request, 'main/profile_list.html', {'profiles': profiles})
-    else:
-        messages.info(request, 'You Must Be Logged In To View This Page...')
-        return redirect('main:home')
-
-
-def profile(request, pk):
-    if request.user.is_authenticated:
-        profile = Profile.objects.get(user_id=pk)
-        tweets = Tweet.objects.filter(user_id=pk)
-        # PostForm logic
-        if request.method == 'POST':
-            # get current user ID
-            current_user_profile = request.user.profile
-            # get form data
-            action = request.POST['follow']  # from profile.html button name='follow'
-            # decide to follow or unfollow
-            if action == 'unfollow':
-                current_user_profile.follows.remove(profile)  # profile = pk
-            elif action == 'follow':
-                current_user_profile.follows.add(profile)
-            # save the profile
-            current_user_profile.save()
-        return render(request, 'main/profile.html', {'profile': profile, 'tweets': tweets})
-    else:
-        messages.info(request, 'You Must Be Logged In To View This Page...')
-        return redirect('main:home')
 
 
 class Ex2View(TemplateView):
@@ -327,7 +296,7 @@ def ai_chat(request):
         return redirect('main:home')
 
 
-openai.api_key = 'YOUR_API_KEY'
+openai.api_key = os.environ.get('OPEN_API')
 
 
 # Generating response from OpenAI Library
@@ -342,7 +311,6 @@ def generate_response(user_input):
         stop=None,
         temperature=0.5,
     )
-
     message = response['choices'][0]['text']
     return message
 
@@ -354,17 +322,179 @@ def clear_chat(request):
     return redirect('main:chat')
 
 
+def profile_list(request):
+    if request.user.is_authenticated:
+        profiles = Profile.objects.all()
+        # profiles = Profile.objects.exclude(user=request.user)
+        return render(request, 'main/profile_list.html', {'profiles': profiles})
+    else:
+        messages.info(request, 'You Must Be Logged In To View This Page...')
+        return redirect('main:home')
+
+
+def profile(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        tweets = Tweet.objects.filter(user_id=pk)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+        # PostForm logic
+        if request.method == 'POST':
+            if request.user.profile == profile:
+                p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+                if p_form.is_valid():
+                    p_form.save()
+                    return redirect('main:profile', pk=pk)
+            # Get current user ID
+            current_user_profile = request.user.profile
+            # Get form data
+            action = request.POST['follow']  # from profile.html button name='follow'
+            # Decide to follow or unfollow
+            if action == 'unfollow':
+                current_user_profile.follows.remove(profile)  # profile = pk
+            elif action == 'follow':
+                current_user_profile.follows.add(profile)
+            # Save the profile
+            current_user_profile.save()
+        return render(request, 'main/profile.html', {'profile': profile, 'tweets': tweets, 'p_form': p_form})
+    else:
+        messages.info(request, 'You Must Be Logged In To View This Page...')
+        return redirect('main:home')
+
+
+def followers(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'main/followers.html', {'profiles': profiles})
+        else:
+            messages.info(request, 'That\'s Not Your Profile Page.')
+            return redirect('main:home')
+
+    else:
+        messages.info(request, 'You Must Be Logged In To View This Page.')
+        return redirect('main:home')
+
+
+def follows(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'main/follows.html', {'profiles': profiles})
+        else:
+            messages.info(request, 'That\'s Not Your Profile Page.')
+            return redirect('main:home')
+
+    else:
+        messages.info(request, 'You Must Be Logged In To View This Page.')
+        return redirect('main:home')
+
+
 def update_user(request):
     if request.user.is_authenticated:
         current_user = User.objects.get(id=request.user.id)
-        form = SignUpForm(request.POST or None, instance=current_user)
-        if form.is_valid():
-            form.save()
+        # Get Forms
+        profile_user = Profile.objects.get(user__id=request.user.id)
+        user_form = SignUpForm(request.POST or None, request.FILES or None, instance=current_user)
+        profile_form = ProfileUpdateForm(request.POST or None, request.FILES or None, instance=profile_user)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             login(request, current_user)
             messages.success(request, 'Your Profile Has Been Updated.')
-            return redirect('main:home')
-        return render(request, 'main/update_user.html', {'form': form})
+            return redirect('main:profile', pk=current_user.pk)
+            # return redirect('main:home')
+        return render(request, 'main/update_user.html', {'user_form': user_form, 'profile_form': profile_form})
 
     else:
         messages.info(request, 'You Must Be Logged In To View That Page.')
+        return redirect('main:home')
+
+
+def tweet_like(request, pk):
+    if request.user.is_authenticated:
+        tweet = get_object_or_404(Tweet, id=pk)
+        if tweet.likes.filter(id=request.user.id):
+            tweet.likes.remove(request.user)
+        else:
+            tweet.likes.add(request.user)
+        return redirect(request.META.get('HTTP_REFERER'))  # http header referer- redirect to referring header
+    else:
+        messages.info(request, 'You Must Be Logged In To View That Page.')
+        return redirect('main:home')
+
+
+def tweet_show(request, pk):
+    tweet = get_object_or_404(Tweet, id=pk)
+    if tweet:
+        return render(request, 'main/show_tweet.html', {'tweet': tweet})
+    else:
+        messages.error(request, "That Tweet Doesn't Exist.")
+        return redirect('main:home')
+
+
+def delete_tweet(request, pk):
+    if request.user.is_authenticated:
+        tweet = get_object_or_404(Tweet, id=pk)
+        if request.user.id == tweet.user.id:
+            tweet.delete()
+            messages.success(request, f'Tweet "{tweet.body[:30]}..." has been successfully deleted.')
+            return redirect('main:home')
+        else:
+            messages.error(request, "This is not your tweet. You can't remove it!")
+            return HttpResponseRedirect(reverse('main:home'))
+    else:
+        messages.info(request, "You must be logged in to delete a tweet.")
+        # return redirect(request.META.get("HTTP_REFERER"))
+        return redirect('main:home')
+
+
+def edit_tweet(request, pk):
+    if request.user.is_authenticated:
+        tweet = get_object_or_404(Tweet, id=pk)
+        if request.user.id == tweet.user.id:
+            form = TweetForm(request.POST or None, instance=tweet)
+            if request.method == 'POST':
+                if form.is_valid():
+                    tweet = form.save(commit=False)
+                    tweet.user = request.user
+                    tweet.save()
+                    messages.success(request, f'Tweet "{tweet.body[:30]}..." has been successfully updated.')
+                    return redirect('main:home')
+            else:
+                return render(request, 'main/edit_tweet.html', {'form': form, 'tweet': tweet})
+        else:
+            messages.error(request, "This is not your tweet. You can't edit it!")
+            return HttpResponseRedirect(reverse('main:home'))
+    else:
+        messages.info(request, "You must be logged in to edit tweets.")
+        return redirect('main:home')
+
+
+def unfollow(request, pk):
+    if request.user.is_authenticated:
+        # get the profile to unfollow
+        profile = Profile.objects.get(user_id=pk)
+        # unfollow the user
+        request.user.profile.follows.remove(profile)
+        # save our profile
+        request.user.profile.save()
+        messages.info(request, f"You have successfully unfollowed: {profile.user.username}")
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+    else:
+        messages.error(request, "You Must Be Logged In.")
+        return redirect('main:home')
+
+
+def follow(request, pk):
+    if request.user.is_authenticated:
+        # get the profile to unfollow
+        profile = Profile.objects.get(user_id=pk)
+        # unfollow the user
+        request.user.profile.follows.add(profile)
+        # save our profile
+        request.user.profile.save()
+        messages.info(request, f"You have successfully followed: {profile.user.username}")
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+    else:
+        messages.error(request, "You Must Be Logged In.")
         return redirect('main:home')

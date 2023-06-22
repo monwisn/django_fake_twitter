@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block template %}
     {% include 'navbar-twitter.html' %}
     <br/><br/>
@@ -33,10 +34,10 @@
                                   {% if message.ai_response %}
                                       <li class="admin clearfix">
                                           <span class="chat-img right clearfix mx-2">
-                                              <img src="https://cdn-icons-png.flaticon.com/512/4616/4616655.png"
+                                              <img src="{% static 'images/ChatGPT_350x350.png' %}"
                                                    width="50px" height="50px" alt="Admin" class="img-circle ai_img"/>
                                               &nbsp;&nbsp;
-                                              <strong class="right primary-font">Chatbot</strong>&nbsp;
+                                              <strong class="right primary-font">ChatGPT</strong>&nbsp;
                                               <small class="left text-muted"><span class="glyphicon glyphicon-time"></span>{{ message.timestamp|timesince }} ago</small>
                                           </span>
                                           <div class="chat-body clearfix">

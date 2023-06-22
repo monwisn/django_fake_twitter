@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_filters %}
 
 {% block title %}Twitter page{% endblock %}
@@ -23,23 +24,65 @@
 {#        <p>User tweets:</p>#}
         {% for tweet in tweets %}
             <div class="alert alert-dark" role="alert">
-                {{ tweet.body }}<br/>
-                <small class="text-muted">
-                    {{ tweet.created_at }} By
-                    @{{ tweet.user.username }}
-                </small>
-            </div><br/>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            {% if tweet.user.profile.profile_image %}
+                                <img src="{{ tweet.user.profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
+                            {% else %}
+                                <img src="{% static 'images/default_profile_img.jpg' %}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
+                            {% endif %}
+                        </div>
+                        <div class="col-11">
+                                &nbsp;{{ tweet.body }}<br/>
+                            <small class="text-muted">
+                                {% if tweet.created_at != tweet.updated_at %}
+                                    [Edited: {{ tweet.updated_at }}]
+                                {% else %}
+                                    {{ tweet.created_at }}
+                                {% endif %} By
+                                @{{ tweet.user.username }}&nbsp;&nbsp;
+                                {{ tweet.number_of_likes }}
+                                {% if user in tweet.likes.all %}
+                                    <a href="{% url 'main:tweet_like' tweet.id %}">
+                                    <i class="fa-solid fa-heart" style="color: red"></i></a> <!-- unlike -->
+                                {% else %}&nbsp;
+                                    <a href="{% url 'main:tweet_like' tweet.id %}">
+                                        <i class="fa fa-heart-o" style="color: red"></i></a> <!-- like -->
+                                {% endif %}&nbsp;
+                            <a href="{% url 'main:tweet_show' tweet.id %}">
+                                <i class="fa-solid fa-share" style="color: grey"></i></a> <!-- share -->
+                            &nbsp;&nbsp;
+                            {% if request.user.id == tweet.user.profile.id %}
+{#                                <i class="fa-solid fa-trash" style="color: red"></i>#}
+                                <a href="{% url 'main:edit_tweet' tweet.id %}">
+                                    <i class="fa fa-edit" aria-hidden="true" style="color: dodgerblue"></i></a>&nbsp;&nbsp;
+                                <a href="{% url 'main:delete_tweet' tweet.id %}">
+                                    <i class="fa fa-trash" aria-hidden="true" style="color: red"></i></a>
+                            {% endif %}
+                            </small>
+                        </div><br/>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </div>
-    <div class="col-4">
-        <br/><br/>
-        {% if form %}
-            <form method="POST">
-                {% csrf_token %}
-                {{ form|crispy }}
-                {{ value|linebreaks }}
-                <button type="submit" class="btn btn-primary">Post Tweet</button>
-            </form>
-        {% endif %}
-    </div>
+                </div>
+                <div class="col-4">
+                    <br/><br/>
+                    {% if form %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            {{ value|linebreaks }}
+                            <button type="submit" class="btn btn-primary">Post Tweet</button>
+                        </form>
+                    {% endif %}
+                </div>
+            <footer><br/><br/><hr>
+                <div class="text-center p-2" style="background-color: transparent;">
+                    <p>© {% now "Y" %} Copyright:
+                        <a href={{ current_site.domain }}>djblogger.com</a>
+                    </p>
+                </div>
+            </footer>
 {% endblock %}

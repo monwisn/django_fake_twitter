@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}New Calendar Event{% endblock %}
+{% block template %}
+    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="container">
+        <h4 style="text-align: left">Add New Reservation to Calender: </h4><hr>
+        <div class="clearfix">
+            <a class="btn btn-info center" href="{% url 'reservation:show_events' %}"> Back to calendar </a>
+        </div>
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.label }} <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ field.label }} <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <table class="form form-table">
+                {{ form }}
+                <tr><td colspan="2">
+                    <button type="submit" class="btn btn-primary right"> Make reservation </button>
+                </td></tr>
+            </table>
+        </form>
+    </div><br/>
+{% endblock %}
+

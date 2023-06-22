@@ -29,10 +29,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main.apps.MainConfig",
     "blog.apps.BlogConfig",
+    "reservation.apps.ReservationConfig",
     "django_htmx",
     "taggit",
     "crispy_forms",
     "simple_chatbot",
+    "schedule",
+    "bootstrap_datepicker_plus",
 
 ]
 
@@ -103,11 +106,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False  # with USE_TZ=True, it’s going to use the system’s time zone
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
