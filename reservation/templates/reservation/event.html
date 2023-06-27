@@ -4,23 +4,20 @@
 
 {% block title %}New Calendar Event{% endblock %}
 {% block template %}
-    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
-    {% include 'navbar-twitter.html' %}<br/>
+    {% include 'navbar-twitter.html' %}<br/><br/>
     <div class="container">
-        <h4 style="text-align: left">Add New Reservation to Calender: </h4><hr>
-        <div class="clearfix">
-            <a class="btn btn-info center" href="{% url 'reservation:show_events' %}"> Back to calendar </a>
-        </div>
+        <h4 style="text-align: left">Add New Reservation to Calendar: </h4><hr>
         {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.label }} <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-            {% endfor %}
+{#            {% for field in form %}#}
+{#                {% for error in field.errors %}#}
+{#                    <div class="alert alert-danger">#}
+{#                        {{ field.label }} <strong>{{ error|escape }}</strong>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            {% endfor %}#}
             {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
                     {{ field.label }} <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
@@ -28,12 +25,34 @@
         <form method="POST">
             {% csrf_token %}
             <table class="form form-table">
-                {{ form }}
-                <tr><td colspan="2">
-                    <button type="submit" class="btn btn-primary right"> Make reservation </button>
-                </td></tr>
+                {{ form.media }}
+                {% for field in form %}
+                    {% if field.name == 'start_time' %}
+                        {{ field.label|capfirst }}
+                        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                            {{ form.start_time }}
+                            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar" style="height:24px; padding-top:4px"></i></div>
+                            </div>
+                        </div><br/>
+                    {% elif field.name == 'cancel_event' %}
+                        {{ field.as_hidden }}
+                    {% else %}
+                        {{ field.label|capfirst }}
+                        {{ field.as_widget|linebreaks }}
+                        {{ field.help_text }}
+                    {% endif %}
+                {% endfor %}<br/>
+                <button type="submit" class="btn btn-primary" style="float: right"> Make reservation </button>
             </table>
         </form>
     </div><br/>
+    <script>
+        $(function () {
+            $("#datetimepicker1").datetimepicker({
+                format: 'YYYY-MM-DD  HH:mm',
+            });
+        });
+    </script><br/><br/>
 {% endblock %}
 

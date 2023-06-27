@@ -50,6 +50,15 @@ class EventsForm(forms.ModelForm):
         self.fields['start'].input_formats = ('%Y-%m-%dT%H:%M',)
         self.fields['end'].input_formats = ('%Y-%m-%dT%H:%M',)
 
+    # def clean(self):
+    #     start_date = self.cleaned_data['start']
+    #     end_date = self.cleaned_data['end']
+    #
+    #     if end_date <= start_date:
+    #         raise forms.ValidationError("End date must be later than start date")
+    #
+    #     return super(EventsForm, self).clean()
+
 
 class EventForm(forms.ModelForm):
     class Meta:

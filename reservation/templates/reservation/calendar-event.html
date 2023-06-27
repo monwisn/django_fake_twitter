@@ -12,19 +12,23 @@
             <a class="btn btn-info center" href="{% url 'reservation:events' %}"> Back to calendar </a>
         </div>
         {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.label }} <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ field.label }} <strong>{{ error|escape }}</strong>
+            {% for key, value in form.errors.items %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                    {{ value|escape|striptags }}
                 </div>
             {% endfor %}
         {% endif %}
+{#        {% if form.errors %}#}
+{#            {% for field in form %}#}
+{#                {% for error in field.errors %}#}
+{#                    <div class="alert alert-danger alert-dismissible" role="alert">#}
+{#                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>#}
+{#                        {{ error|escape }}#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            {% endfor %}#}
+{#        {% endif %}#}
         <form method="POST">
             {% csrf_token %}
             <table class="form form-table">

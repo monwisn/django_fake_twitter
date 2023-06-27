@@ -2,14 +2,16 @@ import calendar
 import json
 from datetime import datetime, date, timedelta
 
+from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import ListView, UpdateView
 
 from .forms import CalendarEventForm, EventsForm, EventForm
-from .models import Event, Events
+from .models import Event, Events, CalendarEvent
 from .utils import Calendar, EventCalendar
 
 
@@ -18,9 +20,15 @@ from .utils import Calendar, EventCalendar
 #     return render(request, 'reservation/event.html', {'form': form})
 
 
-def my_calendar(request):
-    form = CalendarEventForm(request.POST)
-    return render(request, 'reservation/calendar.html', {'form': form})
+def add_event(request):
+    form = CalendarEventForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.info(request, 'New Event Has Been Created.')
+            return redirect('main:home')
+
+    return render(request, 'reservation/event.html', {'form': form})
 
 
 class ShowEventsView(ListView):
@@ -107,6 +115,7 @@ def event(request, event_id=None):
 
     if request.POST and form.is_valid():
         form.save()
+        messages.info(request, f'"{instance.title}" event has been added.')
         return HttpResponseRedirect(reverse('reservation:events'))
     return render(request, 'reservation/calendar-event.html', {'form': form})
 
@@ -119,13 +128,29 @@ def show_events(request, event_id=None):
         instance = Event()
     form = EventForm(request.POST or None, instance=instance)
 
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('reservation:show_events'))
-    return render(request, 'reservation/event.html', {'form': form})
+    if request.POST:
+        if form.is_valid():
+            form.save()
+            messages.info(request, f'Your Event "{instance.title[:20]}..." Has Been Added.')
+            return HttpResponseRedirect(reverse('reservation:show_events'))
+        else:
+            messages.error(request, 'Please correct the error below.')
+            # for error in list(form.errors.values()):
+            #     messages.error(request, error)
+    return render(request, 'reservation/calendar.html', {'form': form})
 
 
 def some_func():
     raise NotImplementedError('something')
 
+
+# def add_event(request):
+    # form = CalendarEventForm(request.POST or None)
+    # if request.method == "POST":
+    #     if form.is_valid():
+    #         form.save()
+    #         messages.info(request, 'New Event Has Been Created.')
+    #         return redirect('main:home')
+    #
+    # return render(request, 'reservation/event.html', {'form': form})
 

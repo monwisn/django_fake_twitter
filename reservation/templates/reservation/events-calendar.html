@@ -16,6 +16,7 @@
             <a class="btn btn-info left" href="{% url 'reservation:events' %}?{{ prev_month }}"> Previous Month </a>
             <a class="btn btn-info right" href="{% url 'reservation:events' %}?{{ next_month }}"> Next Month </a>
         </div>
+        {% include 'messages.html' %}
         <div class="pt-md-3 pb-md-5 mx-auto text-center">
             <div class="calendar" style="text-align: center">
                 {{ calendar|safe }}

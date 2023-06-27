@@ -9,7 +9,7 @@ class EventCalendar(HTMLCalendar):
         super(EventCalendar, self).__init__()
         self.events = events
 
-    def formatday(self, day, weekday, events):
+    def formatday(self, day: int, weekday: int, events):
         """
         Return a day as a table cell.
         """
@@ -22,14 +22,14 @@ class EventCalendar(HTMLCalendar):
         else:
             return '<td class="%s">%d%s</td></div>' % (self.cssclasses[weekday], day, events_html)
 
-    def formatweek(self, theweek, events):
+    def formatweek(self, theweek: int, events):
         """
         Return a complete week as a table row.
         """
         s = ''.join(self.formatday(d, wd, events) for (d, wd) in theweek)
         return '<tr>%s</tr>' % s
 
-    def formatmonth(self, theyear, themonth, withyear=True):
+    def formatmonth(self, theyear: int, themonth: int, withyear: bool = True):
         """
         Return a formatted month as a table.
         """
@@ -59,17 +59,17 @@ class Calendar(HTMLCalendar):
 
     # formats a day as a td
     # filter events by day
-    def formatday(self, day, events):
+    def formatday(self, day: int, events):
         events_per_day = events.filter(start__day=day)
         d = '<div style="height:120px;width:150px;overflow: auto">'
         for event in events_per_day:
-            d += f'{event.get_html_url}&nbsp;({event.start.time().strftime("%H:%M")} - {event.end.time().strftime("%H:%M")})<br/><br/>'
+            d += f'{event.get_html_url}&nbsp;({event.start.time().strftime("%H:%M")} - {event.end.strftime("%H:%M %d/%m")})<br/><br/>'
         if day != 0:
             return f"<td><span class='date'>{day}</span><ul>{d}</ul></td></div>"
         return '<td></td>'
 
     # formats a week as a tr
-    def formatweek(self, theweek, events):
+    def formatweek(self, theweek: int, events):
         week = ''
         for d, weekday in theweek:
             week += self.formatday(d, events)
@@ -77,7 +77,7 @@ class Calendar(HTMLCalendar):
 
     # formats a month as a table
     # filter events by year and month
-    def formatmonth(self, withyear=True):
+    def formatmonth(self, withyear: bool = True):
         events = Events.objects.filter(start__year=self.year, start__month=self.month)
         cal = f'<table border="2" cellpadding="10" cellspacing="30" class="month">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'

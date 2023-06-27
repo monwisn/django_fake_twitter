@@ -4,7 +4,7 @@ from . import views
 app_name = 'reservation'
 
 urlpatterns = [
-    path('', views.my_calendar, name='calendar'),
+    path('', views.add_event, name='add_event'),
     # path('event/', views.event, name='event'),
     path('events/', views.EventsView.as_view(), name='events'),
     path('events/new/', views.event, name='new_event'),

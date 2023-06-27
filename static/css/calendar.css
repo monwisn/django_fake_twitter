@@ -62,7 +62,7 @@ body{
 .calendar td {
   width: 500px;
   height: 120px;
-  padding: 8px 0px 0px 0px;
+  padding: 8px 0 0 0;
 }
 
 .month {
@@ -76,7 +76,7 @@ body{
 
 ul {
   height: 100%;
-  padding: 0px 5px 0px 20px;
+  padding: 0 5px 0 20px;
 }
 
 a {
