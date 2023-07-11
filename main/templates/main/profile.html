@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load thumbnail %}
 {% load static %}
 {% load crispy_forms_filters %}
 
@@ -31,7 +32,7 @@
                                     <div class="row">
                                         <div class="col-1">
                                             {% if profile.profile_image %}
-                                                <img src="{{ profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
+                                                <img src="{{ profile.profile_image.url }}" style="object-fit: cover" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
                                             {% else %}
                                                 <img src="{% static 'images/default_profile_img.jpg' %}" width="50" height="50" class="rounded-circle" alt="{{ profile.user.username }}">
                                             {% endif %}
@@ -65,20 +66,26 @@
                     {% endif %}
                 </div>
                 <div class="col-4">
-                    {% if request.user.id == profile.id %}
-                        {% if profile.profile_image %}
-                            <img src="{{ profile.profile_image.url }}" class="rounded-circle" style="width:180px; height:180px;" alt="profile-img">
-{#                            <img src="{{ profile.profile_image.url }}" style="width:180px; height:180px; border-radius:10%" alt="profile-img">#}
-                        {% endif %}<br/><br/>
-                        <!-- Profile change image form -->
-                         <form method="POST" enctype="multipart/form-data">
-                             {% csrf_token %}
-                             {{ p_form.profile_image }}
-                             <br/><br/><button class="btn btn-outline-info" type="submit">Change profile image</button>
-                         </form>
+                    {% if profile.profile_image %}
+                        {% thumbnail profile.profile_image 'x180' as im %}
+                            <a href="{{ profile.profile_image.url }}" style="background-color: transparent">
+                                <img src="{{ im.url }}" class="rounded-circle" style="width:180px; height:180px; object-fit: cover" alt="profile-img"/>
+                            </a>
+                        {% endthumbnail %}<br/><br/>
+{#                        <img src="{{ profile.profile_image.url }}" class="rounded-circle" style="width:180px; height:180px; object-fit: cover" alt="profile-img">#}
+{#                        <img src="{{ profile.profile_image.url }}" style="width:180px; height:180px; border-radius:10%" alt="profile-img">#}
                     {% else %}
-                        <img src="{% static 'images/default_profile_img.jpg' %}" class="rounded-circle" width="180px" height="180px" alt="default-img"><br/>
-                    {% endif %}<br/>
+                        <img src="{% static 'images/default_profile_img.jpg' %}" class="rounded-circle" width="180px" height="180px" alt="default-img"><br/><br/>
+                    {% endif %}
+                    <!-- Check if login user id match to profile id -->
+                    {% if request.user.id == profile.user_id %}
+                        <!-- Profile change image form -->
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ p_form.profile_image }}
+                            <br/><br/><button class="btn btn-outline-info" type="submit">Change profile image</button>
+                        </form><br/>
+                    {% endif %}
                     {% if profile.homepage_link %}
                         <a href="{{ profile.homepage_link }}" target="new"><i class="fa-solid fa-link fa-lg" style="color: dimgrey"></i></a>
                     {% endif %}&nbsp;&nbsp;
@@ -161,13 +168,14 @@
                     {% endif %}
                     <!-- Check for correct user -->
                     {% if request.user.id == profile.user.id %}
-                        <a href="{% url 'main:update_user' %}" class="btn btn-outline-info">Update Profile</a>
+                        <a href="{% url 'main:update_user' %}" class="btn btn-outline-primary">Update Profile</a>&nbsp;&nbsp;
+                        <a href="{% url 'main:change_password' %}" class="btn btn-outline-primary">Change Password</a>
                     {% endif %}
                 </div>
+                </div>
             </div>
-        </div>
     {% endif %}
-    <br/>
+    <br/><br/>
 
     <style>
     #moreElements {

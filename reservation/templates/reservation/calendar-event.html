@@ -35,9 +35,9 @@
                 {{ form }}
                 <tr><td colspan="2"><br/>
                     {% with url_name=request.resolver_match.url_name %}
-                        {% if url_name == 'new_event' %}
+                        {% if url_name == 'new_events' %}
                             <button type="submit" class="btn btn-primary right"> Add event </button>
-                        {% elif url_name == 'edit_event' %}
+                        {% elif url_name == 'edit_events' %}
                             <button type="submit" class="btn btn-info right"> Edit event </button>
                         {% endif %}
                     {% endwith %}

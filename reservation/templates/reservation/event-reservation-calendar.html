@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Calendar{% endblock %}
+
+{% block template %}
+    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="border-bottom border-1 border-dark">
+        <div class="container" style="text-align: left">
+            <h3>Booking Calendar:</h3>
+        </div>
+    </div><br/>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Calendar</li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:add_event' %}">Make a Reservation</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:running_event' %}">Active Reservation List</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:all_event' %}">All Reservation List</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:calendar_dashboard' %}">Calendar Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:search_event' %}">Search Reservation</a></li>
+            </ol>
+        </nav>
+        {% include 'messages.html' %}
+        <div class="clearfix">
+            <a class="btn btn-info right mr-2" href="{% url 'reservation:calendar' %}?{{ next_month }} "> Next Month >> </a>
+            <a class="btn btn-info right mr-2" href="{% url 'reservation:calendar' %}?{{ prev_month }}"> << Previous Month </a>
+            <a class="btn btn-primary left mr-2" href="{% url 'reservation:add_event' %}"> + Book Now </a>
+        </div>
+        <div style="color: dodgerblue;">
+            <div class="pt-md-3 pb-md-5 mx-auto text-left">
+            {{ calendar }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

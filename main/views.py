@@ -1,7 +1,7 @@
 import os
 
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME
+from django.contrib.auth import login, authenticate, logout, REDIRECT_FIELD_NAME, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
@@ -14,10 +14,10 @@ from django.utils import timezone
 from django.views.generic import TemplateView, RedirectView, DetailView, ListView
 from django.views.generic.edit import FormView, CreateView, UpdateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 
 from blog.models import Post
-from main.forms import AddForm, SignUpForm, TweetForm, ProfileUpdateForm
+from main.forms import AddForm, SignUpForm, TweetForm, ProfileUpdateForm, ChangePasswordForm
 from main.models import Profile, Book, Tweet, Chat
 from main.common import UserAccessMixin
 
@@ -222,7 +222,7 @@ class SignUpView(SuccessMessageMixin, CreateView):
 
 class LoginView(SuccessMessageMixin, FormView):
     form_class = AuthenticationForm
-    success_url = reverse_lazy('main:home')
+    # success_url = reverse_lazy('main:home')
     success_message = 'You\'re now logged in.'
     template_name = 'main/signin.html'
     redirect_field_name = REDIRECT_FIELD_NAME
@@ -234,6 +234,10 @@ class LoginView(SuccessMessageMixin, FormView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password.')
         return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        redirect_to = self.request.GET.get('next')
+        return redirect_to or reverse('main:home')
 
 
 # def login(request):
@@ -263,6 +267,31 @@ class MyLogoutView(LogoutView):
 #     logout(request)
 #     messages.info(request, f"You have been logged out!")
 #     return redirect('main:home')
+
+
+@login_required
+def change_password(request):
+    user = request.user
+    if request.method == 'POST':
+        form = ChangePasswordForm(data=request.POST, user=user)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Your password has been changed.")
+            logout(request)
+            return redirect('main:login')
+        else:
+            for error in list(form.errors.values()):
+                messages.error(request, error)
+            return redirect('main:change_password')
+    else:
+        form = ChangePasswordForm(user=user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+
+def reset_password(request):
+    return render(request, 'password_reset.html', {})
+
 
 
 def ai_chat(request):
@@ -498,3 +527,27 @@ def follow(request, pk):
     else:
         messages.error(request, "You Must Be Logged In.")
         return redirect('main:home')
+
+
+def search(request):
+    if request.method == 'POST':
+        # Grab the form field input
+        search = request.POST['search_field']
+        # Search the database
+        searched = Tweet.objects.filter(body__contains=search)
+        return render(request, 'main/search.html', {'search': search, 'searched': searched})
+    else:
+        return render(request, 'main/search.html', {})
+
+
+def search_user(request):
+    if request.method == 'POST':
+        search = request.POST['search_field']
+        searched = User.objects.filter(username__contains=search)
+        return render(request, 'main/search_user.html', {'search': search, 'searched': searched})
+    else:
+        return render(request, 'main/search_user.html', {})
+
+
+def index(request):
+    return render(request, 'main/index.html', {})

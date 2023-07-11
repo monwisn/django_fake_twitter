@@ -1,6 +1,8 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetCompleteView
 
 from .models import Book, Tweet, Profile
 
@@ -26,12 +28,13 @@ class SignUpForm(UserCreationForm):
     email = forms.CharField(
         widget=forms.EmailInput(attrs={'class': 'form-control'}), max_length=100, required=True)
     password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password')
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password:')
     password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password Confirm')
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password Confirmation:')
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        help_text='Optional. Format: DD-MM-YYYY', required=False, label='Birth Date')
+        help_text='<small class="text-muted"><em>Use following format: DD-MM-YYYY  (Optional)</em></small>', required=False,
+        label='Date of Birth:')
 
     class Meta:
         model = User
@@ -88,6 +91,9 @@ class ProfileUpdateForm(forms.ModelForm):
         }
 
 
-
+class ChangePasswordForm(SetPasswordForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['new_password1', 'new_password2']
 
 

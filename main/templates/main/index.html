@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .background {
+            background-color: #17a2b8;
+            color: green;
+        }
+    </style>
+    <title>Title</title>
+</head>
+<body>
+    <!-- This is a comment in HTML -->
+    <h1>This is Head 1 </h1>
+    <h3>This is Head 3</h3>
+    <div>First  division element.
+        <div>Some new element. Division element here.
+            <p title="this is title of the paragraph">This is paragraph
+                <mark>Without spaces</mark>
+                browser will <em>remove extra</em> spaces
+                and
+                extra lines.
+            </p>
+        </div><br>
+        <br/>If we add br <small>tag</small> we get a linebreak.
+
+        <p class="background">lorem <strong>ipsum</strong> dolor <del>something between</del> sit
+            6<sup>2</sup> = 36
+            something <sub>3</sub>
+            <br>lorem ipsum <ins>once again</ins>
+        </p>
+        <span>
+            This <span style="color: red">this is span styled in red</span> text will be formatted in the different way.
+            We're going to use some CSS to make this section personalized.
+        </span>
+        <br><br>
+        <img src="{% static 'images/default_profile_img.jpg' %}" alt="image name if load fails"><br/>
+        <a href="http://localhost:8000/" target="_blank">Main page</a><br><br>
+
+        <a href="#new_id">Test id.
+            Click on image to navigate to paragraph.
+            This is a hint, it could be without text, just image.<br><br>
+        <img src="{% static 'images/default-profile-icon.jpg' %}" alt="image name if load fails">
+        </a>
+        <br><br><br><br><br><br><br><br><br><br><br>
+        <p id="new_id">This is a paragraph to test with image id</p>
+    </div>
+    <ul>
+        <li>List item 1</li>
+        <li>List item 2</li>
+        <li>List item 3</li>
+        <li>List item 4</li>
+        <li>List item 5</li>
+        <li>List item 6</li>
+    </ul>
+    <ol type="I" start="10">
+        <li>List item 3</li>
+        <li>List item 5</li>
+        <li>List item 6</li>
+        <li>List item 2</li>
+        <li>List item 1</li>
+        <li>List item 4</li>
+        <ul>
+            <li>Sub bullet 1</li>
+            <li>Sub bullet 2</li>
+            <li>Sub bullet 3</li>
+        </ul>
+        <li>List item 7</li>
+        <li>List item 8</li>
+    </ol>
+    <table>
+        <caption>This is caption.</caption>
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th colspan="2">Phone number</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Monika</td>
+            <td>Wisniewska</td>
+            <td>111-222-333</td>
+            <td>444-555-666</td>
+        </tr>
+        <tr>
+            <td>Test 1</td>
+            <td>Test 2</td>
+            <td>Test 3</td>
+        </tr>
+        <tr>
+            <td>John</td>
+            <td>Doe</td>
+            <td>27</td>
+        </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <table>
+        <tr>
+            <th>Name</th>
+            <td>John Doe</td>
+        </tr>
+        <tr>
+            <th rowspan="2">Phone Number</th>
+            <td>555-555-555</td>
+        </tr>
+        <tr>
+            <td>666-666-666</td>
+        </tr>
+    </table>
+    <a href="{% url 'main:profile_list' %}" target="_blank">
+        <img src="{% static 'images/default_profile_img.jpg' %}">
+    </a>
+    <br/><hr><br/>
+    <form action="{% url 'main:home' %}">
+        <fieldset>
+            <legend> Personal Information </legend><br/>
+            First Name<br/>
+            <input type="text" name="firstname" value="" placeholder="Enter first name"><br/><br/>
+            Last Name<br/>
+            <input type="text" name="lastname" value="" placeholder="Enter last name"><br/><br/>
+            <input type="radio" name="options"> Option 1
+            <input type="radio" name="options"> Option 2
+            <input type="radio" name="options"> Option 3
+            <br><br>
+            <input type="checkbox" name="checkboxes">Option 4
+            <input type="checkbox" name="checkboxes">Option 5
+            <input type="checkbox" name="checkboxes" checked>Option 6<br><br>
+            <label for="newSelect">Select:</label>
+            <select name="selects" id="newSelect" multiple>
+                <option value="first">First Option</option>
+                <option value="second" selected>Second Option</option>
+                <option value="third">Third Option</option>
+            </select><br><br>
+            <input type="submit" value="Submit">
+        </fieldset>
+    </form>
+</body>
+</html>

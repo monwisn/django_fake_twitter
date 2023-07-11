@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Users{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="container">
+        <h4>Search Users: </h4><br/>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="search_field" class="form-control" placeholder="Search..."><br/>
+            <button type="submit" class="btn btn-primary" style="float: right">Search Users</button><br/>
+        </form><br/>
+        {% if search %}
+            <h5>You searched for: '{{ search }}'</h5><hr/>
+        {% endif %}
+        {% if searched.count != 0 %}
+            {% for result in searched %}
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if result.profile.profile_image %}
+                                <img src="{{ result.profile.profile_image.url }}" class="img-fluid rounded-start" style="width:180px; height:180px;" alt="{{ result.profile.user.username }}">
+                            {% else %}
+                                <img src="{% static 'images/default_profile_img.jpg' %}" class="img-fluid rounded-start" width="180px" height="180px" alt="default-img">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ result.profile.user.username }}
+                                    {% if result.profile.user.first_name and result.profile.user.last_name %}
+                                        <small>&nbsp;&nbsp;({{ result.profile.user.first_name|capfirst }} {{ result.profile.user.last_name|capfirst }})</small><br/>
+                                    {% endif %}
+                                </h5>
+                                <a href="{% url 'main:profile' result.profile.user.id %}" class="card-text">@{{ result.profile.user.username|lower }}</a>
+                                <br/><br/>
+                                <p class="card-text"><small class="text-muted">Last Updated: {{ result.profile.date_modified }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            {% endfor %}
+        {% else %}
+{#        {% elif searched == None %}#}
+{#        {% else %}#}
+            Sorry, No users containing that exist. Please Try Again...
+        {% endif %}
+    </div><br/><br/>
+{% endblock %}

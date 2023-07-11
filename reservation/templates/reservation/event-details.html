@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="container">
+        <a class="btn btn-primary left" href="{% url 'reservation:calendar' %}"> Calendar </a>
+        <a class="btn btn-info right" href="{% url 'reservation:event_edit' event.pk %}"> Edit Reservation </a>
+        <br/><br/>
+            <div class="container" style="text-align: left">
+                <h4>Reservation no.{{ event.id }}</h4>
+            </div>
+        <div class="clearfix" style="text-align: center">
+            <div class="card">
+                <h4 style="margin-top:12px">Booker details:&nbsp;
+                    <span style="color: dimgrey">{{ event.booker_data }}</span>
+                </h4><hr>
+                <p>Reservation Details:<br/><br/>
+                    From: <span style="color: dimgrey"><strong>{{ event.start_time }}</strong></span><br/>
+                    To <span style="color: dimgrey;"><strong>{{ event.end_time }}</strong></span>
+                </p>
+                {% if event.notes %}
+                <p>Reservation Notes: <span style="color: dimgrey;"><strong>'{{ event.notes }}'</strong></span></p>
+                {% endif %}
+                <br/><br/>
+            </div>
+        </div><br/>
+        <div style="text-align:right; margin:0 auto 0 auto;">
+            <a class="btn btn-danger" href="{% url 'reservation:delete_event' event.id %}"> Delete Reservation </a>
+        </div>
+    </div><br/><br/>
+{% endblock %}

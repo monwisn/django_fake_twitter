@@ -36,12 +36,14 @@ INSTALLED_APPS = [
     "simple_chatbot",
     "schedule",
     "bootstrap_datepicker_plus",
+    "sorl.thumbnail",
 
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # attempts to determine the user’s preference language
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -106,6 +108,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
+LANGUAGES = [
+    ('en', 'English'),
+    ('pl', 'Polish'),
+    ('it', 'Italian'),
+    ('fr', 'French'),
+]
+
 TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
@@ -119,6 +128,10 @@ STATIC_URL = "static/"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# to remove black background from images
+THUMBNAIL_COLORSPACE = None
+THUMBNAIL_PRESERVE_FORMAT = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -139,9 +152,22 @@ MESSAGE_TAGS = {
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_USE_TLS = True  # this encrypts our emails being sent
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587  # this is gmail's port
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+
+REDIRECT_FIELD_NAME = 'next'
+
 SIMPLE_CHATBOT = {
     'responses': (
         ("main.responses.GreetingResponse", "Greeting"),
         ("main.responses.GoodbyeResponse", "Goodbye"),
     ),
 }
+
+

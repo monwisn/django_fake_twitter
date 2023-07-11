@@ -21,7 +21,7 @@
                                     <small class="text-muted">author: {{ book.author }}</small>
 {#                                    <small class="text-muted">{{ book.genre }}</small>#}
                                     <small><a class="text-muted" href="{% url 'main:genre' genre=book.genre %}">{{ book.genre }}</a></small>
-                                    <small class="text-muted">{{ book.isbn }}</small>
+                                    <small class="text-muted"><em>{{ book.isbn }}</em></small>
                                 </div>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
         <span class="step-links">
             {% if page_obj.has_previous %}
                 <a href="?page=1">&laquo; first</a>
-                <b><a href="?page={{ page_obj.previous_page_number }}">previous</a></b>
+                <strong><a href="?page={{ page_obj.previous_page_number }}">previous</a></strong>
             {% endif %}
 
             <span class="current">
@@ -44,7 +44,7 @@
             </span>
 
             {% if page_obj.has_next %}
-                <b><a href="?page={{ page_obj.next_page_number }}">next</a></b>
+                <strong><a href="?page={{ page_obj.next_page_number }}">next</a></strong>
                 <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
             {% endif %}
         </span>

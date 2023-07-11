@@ -19,7 +19,7 @@
                     <form method="POST" action="" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ user_form|crispy|linebreaks }}
-                        {{ profile_form|crispy|linebreaks }}
+                        {{ profile_form|crispy }}<br/>
                         <button class="btn btn-primary" type="submit" style="float: right">Update Profile</button>
                     </form>
                 </div>

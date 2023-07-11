@@ -13,8 +13,8 @@
             {% for post in posts %}
             <h4>Author: {{ post.author }}<br/><br/></h4>
             <p><b>Title: {{ post.title }}</b></p><br/>
-            <p><b>Content: </b>{{ post.content|truncatechars:150 }}</p>
-            <p>Read the full text: <a href="{% url 'main:redirect_task' pk=post.id %}">{{ post.title }}</a></p>
+            <p><strong>Content: </strong>{{ post.content|truncatechars:150 }}</p>
+            <p title="Click on the link to see the full text.">Read the full text: <a href="{% url 'main:redirect_task' pk=post.id %}">{{ post.title }}</a></p>
             <hr/><br/>
             {% endfor %}
         </div>
