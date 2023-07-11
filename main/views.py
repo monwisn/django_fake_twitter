@@ -222,7 +222,7 @@ class SignUpView(SuccessMessageMixin, CreateView):
 
 class LoginView(SuccessMessageMixin, FormView):
     form_class = AuthenticationForm
-    success_url = reverse_lazy('main:home')
+    # success_url = reverse_lazy('main:home')
     success_message = 'You\'re now logged in.'
     template_name = 'main/signin.html'
     redirect_field_name = REDIRECT_FIELD_NAME
@@ -234,6 +234,10 @@ class LoginView(SuccessMessageMixin, FormView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password.')
         return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        redirect_to = self.request.GET.get('next')
+        return redirect_to or reverse('main:home')
 
 
 # def login(request):
@@ -498,3 +502,14 @@ def follow(request, pk):
     else:
         messages.error(request, "You Must Be Logged In.")
         return redirect('main:home')
+
+
+def search(request):
+    if request.method == 'POST':
+        # Grab the form field input
+        search = request.POST['search_field']
+        # Search the database
+        searched = Tweet.objects.filter(body__contains= search)
+        return render(request, 'main/search.html', {'search': search, 'searched': searched})
+    else:
+        return render(request, 'main/search.html', {})

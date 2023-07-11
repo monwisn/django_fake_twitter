@@ -52,3 +52,29 @@ html, body{
 .color {
     background-color: transparent;
 }
+
+.search {
+  position: relative;
+  color: dimgray;
+}
+
+/*.search {display: inline-block;}*/
+
+.search input {
+  width: 350px;
+  height: 35px;
+
+  background: transparent;
+  border: 1px solid grey;
+  /*border-radius: 10px;*/
+  /*box-shadow: 0 0 3px #ccc, 0 10px 15px #ebebeb inset;*/
+}
+
+.search input { text-indent: 35px;}
+.search .fa-search {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.search .fa-search {left: 12px; right: auto;}

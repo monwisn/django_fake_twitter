@@ -17,13 +17,24 @@ class Events(models.Model):
 
     @property
     def get_html_url(self):
-        url = reverse('reservation:edit_event', args=(self.id,))
+        url = reverse('reservation:edit_events', args=(self.id,))
         return f'<a href="{url}"> {self.title} </a>'
 
     class Meta:
         verbose_name = 'Event'
         verbose_name_plural = 'Events'
         ordering = ('start',)
+
+    def clean(self):
+        start_date = self.start
+        end_date = self.end
+
+        if end_date <= start_date:
+            raise ValidationError({"end": "End date must be later than start date"})
+        elif start_date <= datetime.now():
+            raise ValidationError({"start": "You can't choose a date in the past."})
+
+        return super(Events, self).clean()
 
 
 class Event(models.Model):
@@ -67,11 +78,11 @@ class Event(models.Model):
 
     def clean(self):
         if self.end_time <= self.start_time:
-            raise ValidationError('Ending times must be after starting times.')
+            raise ValidationError("Ending time must be after starting time.", code="invalid")
 
         if (self.day.strftime("%Y/%m/%d ") + self.start_time.strftime("%H:%M:%S")) <= datetime.now().strftime(
                 "%Y/%m/%d %H:%M:%S"):
-            raise ValidationError("You can't choose a date in the past.")
+            raise ValidationError("You can't choose a date in the past.", code="invalid")
 
         events = Event.objects.filter(day=self.day).exclude(id=self.id)
         # events = Event.objects.filter(day=self.day)
@@ -80,9 +91,29 @@ class Event(models.Model):
             for event in events:
                 # if event.id != self.id:
                 if self.check_overlap(event.start_time, event.end_time, self.start_time, self.end_time):
-                    raise ValidationError(f"""There is an overlap event with this date:
-                                          {event.day.strftime("%d/%m/%Y")},
-                                          {event.start_time.strftime("%H:%M")} - {event.end_time.strftime("%H:%M")}.""")
+                    raise ValidationError(f"""There is an overlap event with this date:\
+                                          {event.day.strftime("%d/%m/%Y")},\
+                                          {event.start_time.strftime("%H:%M")} - {event.end_time.strftime("%H:%M")}.""",
+                                          code='invalid')
+        super(Event, self).clean()
+
+    def save(self, *args, **kwargs):
+        super(Event, self).save(*args, **kwargs)
+
+
+class EventManager(models.Manager):
+    """ Event manager """
+
+    def get_all_events(self):
+        events = CalendarEvent.objects.filter(cancel_event=False)
+        return events
+
+    def get_running_events(self):
+        running_events = CalendarEvent.objects.filter(
+            cancel_event=False,
+            end_time__gte =datetime.now().date(),
+        ).order_by('start_time')
+        return running_events
 
 
 class CalendarEventDuration(models.IntegerChoices):
@@ -103,27 +134,39 @@ class CustomDateTimeField(models.DateTimeField):
 
 class CalendarEvent(models.Model):
     booker_data = models.CharField(max_length=200, help_text='Name and Surname')
-    start_time = models.DateTimeField(help_text='Starting time', default=datetime.now) # or datetime.now to get current time when refresh
+    start_time = models.DateTimeField(help_text='Starting time',
+                                      default=datetime.now)  # or datetime.now to get current time when refresh
     duration = models.PositiveSmallIntegerField(default=CalendarEventDuration.ONE_HOUR,
                                                 choices=CalendarEventDuration.choices)  # DurationField()
     end_time = CustomDateTimeField(help_text='Final time', default=datetime.now, editable=True)
     notes = models.TextField(help_text='Add description', blank=True, null=True)
     cancel_event = models.BooleanField(help_text='Cancel this event', default=False)
 
+    objects = EventManager()
+
+    # def validate_dates(self, data):
+    #     if data['start_time'] >= data['end_time']:
+    #         raise ValidationError("Finish must occur after start.")
+    #     return data
+
+    def clean(self):
+        # extra validation to ensure that the start date is always in the future.
+        if self.start_time <= datetime.now():
+            raise ValidationError("Start time cannot be in the past.")
+
     def save(self, *args, **kwargs):
         """ On save, update end_time """
         self.end_time = self.start_time + timedelta(minutes=self.duration)
         return super(CalendarEvent, self).save(*args, **kwargs)
 
-
-    def validate_dates(self, data):
-        # extra validation to ensure that the end date is always after the start date
-        if data['start_time'] >= data['end_time']:
-            raise ValidationError("Finish must occur after start.")
-        return data
-
-
     def __str__(self):
         return f'Reservation {self.id}: {self.booker_data}'
 
+    def get_absolute_url(self):
+        return reverse('reservation:event_details', args=(self.id,))
+
+    @property
+    def get_html_url(self):
+        url = reverse('reservation:event_details', args=(self.id,))
+        return f'<a href="{url}"> {self.booker_data} </a>'
 

@@ -1,29 +1,35 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_filters %}
 
+
+{% block title %}New Calendar Event{% endblock %}
 {% block template %}
-    {% include 'navbar-twitter.html' %}<br/><br/>
+    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+    {% include 'navbar-twitter.html' %}<br/>
     <div class="container">
-        <form action="" method="post">
+    {% with url_name=request.resolver_match.url_name %}
+        {% if url_name == 'new_show_events' %}
+            <h4 style="text-align: left">Add New Event:</h4><hr>
+        {% elif url_name == 'edit_show_events' %}
+            <h4 style="text-align: left">Edit Event:</h4><hr>
+        {% endif %}
+    {% endwith %}
+    {% include 'messages.html' %}
+        <form method="POST">
             {% csrf_token %}
-            {{ form.media }}
-{#            {{ form|crispy }}#}
-            {% for field in form %}
-                {% if field.name == 'start_time' %}
-                    {{ field.label|capfirst }}
-                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                        {{ form.start_time }}
-                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                            <div class="input-group-text"><i class="fa fa-calendar" style="height:24px; padding-top:4px"></i></div>
-                        </div>
-                    </div><br/>
-                {% else %}
-                    {{ field.label|capfirst }}
-                    {{ field.as_widget|linebreaks }}
-                    {{ field.help_text }}
-                {% endif %}
-            {% endfor %}
-            <button class="btn btn-primary" type="submit" style="float: right">Make reservation</button>
+            <table class="form form-table">
+                {{ form }}
+                <tr><td colspan="2">
+                    {% with url_name=request.resolver_match.url_name %}
+                        {% if url_name == 'new_show_events' %}
+                            <button type="submit" class="btn btn-primary" style="float: right"> Add event </button>
+                        {% elif url_name == 'edit_show_events' %}
+                            <button type="submit" class="btn btn-info" style="float: right"> Edit event </button>
+                        {% endif %}
+                    {% endwith %}
+                </td></tr>
+            </table>
         </form>
     </div>
     <script>

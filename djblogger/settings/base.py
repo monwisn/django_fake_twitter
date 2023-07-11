@@ -139,6 +139,8 @@ MESSAGE_TAGS = {
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
+REDIRECT_FIELD_NAME = 'next'
+
 SIMPLE_CHATBOT = {
     'responses': (
         ("main.responses.GreetingResponse", "Greeting"),

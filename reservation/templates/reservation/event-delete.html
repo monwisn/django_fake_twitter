@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Reservation{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+     <div class="container">
+         <a class="btn btn-primary" href="{% url 'reservation:calendar' %}"> Back to Calendar </a>
+         <a class="btn btn-info" href="{% url 'reservation:event_details' event.pk %}"> Back to Reservation </a>
+         <br/><br/>
+         <div class="card">
+             <div class="container" style="text-align: center">
+                 <h3 style="margin-top:12px">Delete Reservation:</h3><br/>
+                 <form action="" method="post">
+                     {% csrf_token %}
+                     '{{ event }}'
+                     <p><br/>Are you sure you want to delete this event?</p>
+                     <button class="btn btn-danger ml-2" type="submit"> >> Delete << </button>
+                 </form>
+                 <br/>
+             </div>
+         </div><br/><br/>
+     </div>
+{% endblock %}

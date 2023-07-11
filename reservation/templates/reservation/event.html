@@ -4,23 +4,49 @@
 
 {% block title %}New Calendar Event{% endblock %}
 {% block template %}
-    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
     {% include 'navbar-twitter.html' %}<br/>
-    <div class="container">
-        <h4 style="text-align: left">Add New Reservation to Calender: </h4><hr>
-        <div class="clearfix">
-            <a class="btn btn-info center" href="{% url 'reservation:show_events' %}"> Back to calendar </a>
+    <div class="border-bottom border-1 border-dark">
+        <div class="container" style="text-align: left">
+            {% with url_name=request.resolver_match.url_name %}
+                {% if url_name == 'add_event' %}
+                    <h3 style="text-align: left">Add New Reservation: </h3>
+                {% elif url_name == 'event_edit' %}
+                    <h3 style="text-align: left">Edit Your Reservation: </h3>
+                {% endif %}
+            {% endwith %}
         </div>
+    </div><br/>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:calendar' %}">Calendar</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Make a Reservation</li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:running_event' %}">Active Reservation List</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:all_event' %}">All Reservation List</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:calendar_dashboard' %}">Calendar Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:search_event' %}">Search Reservation</a></li>
+            </ol>
+        </nav><br/>
+{#        <div style="text-align:right; margin:0 auto 0 auto;">#}
+{#            <a class="btn btn-info" href="{% url 'reservation:calendar' %}"> Go to Calendar </a>#}
+{#        </div>#}
+
+{#        {% if form.errors %}#}
+{#            {% for field in form %}#}
+{#                {% for error in field.errors %}#}
+{#                    <div class="alert alert-danger alert-dismissible" role="alert">#}
+{#                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>#}
+{#                        <strong>{{ error|escape }}</strong>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            {% endfor %}#}
+{#        {% endif %}#}
+
         {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.label }} <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-            {% endfor %}
             {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
                     {{ field.label }} <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
@@ -28,12 +54,43 @@
         <form method="POST">
             {% csrf_token %}
             <table class="form form-table">
-                {{ form }}
-                <tr><td colspan="2">
-                    <button type="submit" class="btn btn-primary right"> Make reservation </button>
-                </td></tr>
+                {{ form.media }}
+                {% for field in form %}
+                    {% if field.name == 'start_time' %}
+                        {{ field.label|capfirst }}
+                        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                            {{ form.start_time }}
+                            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar" style="height:24px; padding-top:4px"></i></div>
+                            </div>
+                        </div><br/>
+                    {% elif field.name == 'cancel_event' %}
+                        {{ field.as_hidden }}
+                    {% else %}
+                        {{ field.label|capfirst }}
+                        {{ field.as_widget|linebreaks }}
+                        {{ field.help_text }}
+                    {% endif %}
+                {% endfor %}<br/>
+                {% with url_name=request.resolver_match.url_name %}
+                    {% if url_name == 'add_event' %}
+                        <button type="submit" class="btn btn-primary" style="float: right"> Make a reservation </button>
+                    {% elif url_name == 'event_edit' %}
+                        <button type="submit" class="btn btn-info" style="float: right"> Edit reservation </button>
+                    {% endif %}
+                {% endwith %}
             </table>
         </form>
     </div><br/>
+    <script>
+        $(function () {
+            moment.locale('en', {
+                week: { dow: 1 } // Monday is the first day of the week
+            });
+            $("#datetimepicker1").datetimepicker({
+                format: 'YYYY-MM-DD  HH:mm',
+            });
+        });
+    </script><br/><br/>
 {% endblock %}
 
