@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events List{% endblock %}
+
+{% block template %}
+    {% include 'navbar-twitter.html' %}<br/>
+    <div class="border-bottom border-1 border-dark">
+        <div class="container" style="text-align: left">
+            {% with url_name=request.resolver_match.url_name %}
+                {% if url_name == 'running_event' %}
+                    <h3>Active Reservation List:</h3>
+                {% elif url_name == 'all_event' %}
+                    <h3>All Reservation List:</h3>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div><br/>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:calendar' %}">Calendar</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:add_event' %}">Make a Reservation</a></li>
+                {% with url_name=request.resolver_match.url_name %}
+                    {% if url_name == 'running_event' %}
+                        <li class="breadcrumb-item active" aria-current="page">Active Reservation List</li>
+                        <li class="breadcrumb-item"><a href="{% url 'reservation:all_event' %}">All Reservation List</a></li>
+                    {% elif url_name == 'all_event' %}
+                        <li class="breadcrumb-item"><a href="{% url 'reservation:running_event' %}">Active Reservation List</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">All Reservation List</li>
+                    {% endif %}
+                {% endwith %}
+                <li class="breadcrumb-item"><a href="{% url 'reservation:calendar_dashboard' %}">Calendar Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'reservation:search_event' %}">Search Reservation</a></li>
+            </ol>
+        </nav><br/>
+     <div class="search">
+            <form method="post" action="/reservation/search-event/" class="col-3 pb-4">
+                {% csrf_token %}
+                <span class="fa fa-search"></span>
+                <input type="text" name="search" class="rounded-pill" placeholder="Search Reservation By Name...">
+            </form>
+        </div>
+{#        <form method="post" action="/reservation/search-event/" class="col-3 pb-4">#}
+{#        <form method="get" action="{% url 'reservation:search_event' %}" class="col-3 pb-4">#}
+{#            {% csrf_token %}#}
+{#            <input type="text" name="search" class="form-control rounded-pill" placeholder="Search Reservation By Name...">#}
+{#        </form>#}
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr role="row">
+                <th style="width: 80px;">ID</th>
+                <th style="width: 220px;">Booker Info</th>
+                <th style="width: 220px;">Start Time</th>
+                <th style="width: 100px;">Duration</th>
+                <th style="width: 220px;">End Time</th>
+                <th style="width: 450px;">Reservation Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in object_list %}
+                <tr role="row">
+{#                    <td>{{ forloop.counter }}</td>#}
+                    <td>{{ event.id }}</td>
+                    <td>{{ event.booker_data }}</td>
+                    <td>{{ event.start_time }}</td>
+                    <td>{{ event.duration }} minutes</td>
+                    <td>{{ event.end_time }}</td>
+                    <td>{{ event.notes }}</td>
+                </tr>
+            {% endfor %}
+            {% with url_name=request.resolver_match.url_name %}
+                {% if url_name == 'running_event' %}
+                    Running Events: {{ calendarevent_list.count }}
+                {% elif url_name == 'all_event' %}
+                    All Events: {{ calendarevent_list.count }}
+                {% endif %}
+            {% endwith %}
+            </tbody>
+        </table>
+    </div><br/>
+{% endblock %}

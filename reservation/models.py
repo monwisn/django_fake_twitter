@@ -17,7 +17,7 @@ class Events(models.Model):
 
     @property
     def get_html_url(self):
-        url = reverse('reservation:edit_event', args=(self.id,))
+        url = reverse('reservation:edit_events', args=(self.id,))
         return f'<a href="{url}"> {self.title} </a>'
 
     class Meta:
@@ -101,6 +101,21 @@ class Event(models.Model):
         super(Event, self).save(*args, **kwargs)
 
 
+class EventManager(models.Manager):
+    """ Event manager """
+
+    def get_all_events(self):
+        events = CalendarEvent.objects.filter(cancel_event=False)
+        return events
+
+    def get_running_events(self):
+        running_events = CalendarEvent.objects.filter(
+            cancel_event=False,
+            end_time__gte =datetime.now().date(),
+        ).order_by('start_time')
+        return running_events
+
+
 class CalendarEventDuration(models.IntegerChoices):
     HALF_HOUR = 30, "30 minutes"
     ONE_HOUR = 60, "1 hour"
@@ -127,6 +142,8 @@ class CalendarEvent(models.Model):
     notes = models.TextField(help_text='Add description', blank=True, null=True)
     cancel_event = models.BooleanField(help_text='Cancel this event', default=False)
 
+    objects = EventManager()
+
     # def validate_dates(self, data):
     #     if data['start_time'] >= data['end_time']:
     #         raise ValidationError("Finish must occur after start.")
@@ -144,3 +161,12 @@ class CalendarEvent(models.Model):
 
     def __str__(self):
         return f'Reservation {self.id}: {self.booker_data}'
+
+    def get_absolute_url(self):
+        return reverse('reservation:event_details', args=(self.id,))
+
+    @property
+    def get_html_url(self):
+        url = reverse('reservation:event_details', args=(self.id,))
+        return f'<a href="{url}"> {self.booker_data} </a>'
+

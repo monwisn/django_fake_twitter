@@ -1,7 +1,7 @@
 from datetime import datetime as dtime, date, time
 from calendar import HTMLCalendar
 from pytz import timezone
-from .models import Events, Event
+from .models import Events, Event, CalendarEvent
 
 
 class EventCalendar(HTMLCalendar):
@@ -80,6 +80,41 @@ class Calendar(HTMLCalendar):
     def formatmonth(self, withyear: bool = True):
         events = Events.objects.filter(start__year=self.year, start__month=self.month)
         cal = f'<table border="2" cellpadding="10" cellspacing="30" class="month">\n'
+        cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
+        cal += f'{self.formatweekheader()}\n'
+        for week in self.monthdays2calendar(self.year, self.month):
+            cal += f'{self.formatweek(week, events)}\n'
+        cal += f'<table/>\n'
+
+        return cal
+
+
+class NewCalendar(HTMLCalendar):
+    def __init__(self, year=None, month=None):
+        self.year = year
+        self.month = month
+        super(NewCalendar, self).__init__()
+
+    def formatday(self, day, events):
+        events_per_day = events.filter(start_time__day=day)
+        d = "<div style='height:120px;width:150px;overflow: auto;'>"
+        for event in events_per_day:
+            d += f"<li>Res.{event.id}:&nbsp;&nbsp; {event.get_html_url} </li>"
+        if day != 0:
+            return f"<td><span class='date'>&nbsp;&nbsp;&nbsp;{day}</span><ul> {d} </ul></td>"
+        return "<td></td>"
+
+    def formatweek(self, theweek, events):
+        week = ""
+        for d, weekday in theweek:
+            week += self.formatday(d, events)
+        return f"<tr> {week} </tr><div/>"
+
+    def formatmonth(self, withyear=True):
+        events = CalendarEvent.objects.filter(
+            start_time__year=self.year, start_time__month=self.month
+        )
+        cal = '<table border="0" cellpadding="0" cellspacing="0" class="calendar" style="font-size:13px">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
         for week in self.monthdays2calendar(self.year, self.month):

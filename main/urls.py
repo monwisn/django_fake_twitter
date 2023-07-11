@@ -41,5 +41,6 @@ urlpatterns = [
     path('edit_tweet/<int:pk>', views.edit_tweet, name='edit_tweet'),
     path('unfollow/<int:pk>', views.unfollow, name='unfollow'),
     path('follow/<int:pk>', views.follow, name='follow'),
+    path('search/', views.search, name='search'),
     # path('simple_chatbot/', SimpleChatbot.as_view(), name='chatbot'),
 ]

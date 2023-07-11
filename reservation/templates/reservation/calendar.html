@@ -8,14 +8,26 @@
     <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
     {% include 'navbar-twitter.html' %}<br/>
     <div class="container">
-    <h4 style="text-align: left">Add New Event:</h4><hr>
+    {% with url_name=request.resolver_match.url_name %}
+        {% if url_name == 'new_show_events' %}
+            <h4 style="text-align: left">Add New Event:</h4><hr>
+        {% elif url_name == 'edit_show_events' %}
+            <h4 style="text-align: left">Edit Event:</h4><hr>
+        {% endif %}
+    {% endwith %}
     {% include 'messages.html' %}
         <form method="POST">
             {% csrf_token %}
             <table class="form form-table">
                 {{ form }}
                 <tr><td colspan="2">
-                    <button class="btn btn-primary" type="submit" style="float: right">Add event</button>
+                    {% with url_name=request.resolver_match.url_name %}
+                        {% if url_name == 'new_show_events' %}
+                            <button type="submit" class="btn btn-primary" style="float: right"> Add event </button>
+                        {% elif url_name == 'edit_show_events' %}
+                            <button type="submit" class="btn btn-info" style="float: right"> Edit event </button>
+                        {% endif %}
+                    {% endwith %}
                 </td></tr>
             </table>
         </form>
