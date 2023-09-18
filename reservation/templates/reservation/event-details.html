@@ -18,10 +18,10 @@
                 </h4><hr>
                 <p>Reservation Details:<br/><br/>
                     From: <span style="color: dimgrey"><strong>{{ event.start_time }}</strong></span><br/>
-                    To <span style="color: dimgrey;"><strong>{{ event.end_time }}</strong></span>
+                    To: <span style="color: dimgrey;"><strong>{{ event.end_time }}</strong></span>
                 </p>
                 {% if event.notes %}
-                <p>Reservation Notes: <span style="color: dimgrey;"><strong>'{{ event.notes }}'</strong></span></p>
+                    <p>Reservation Notes: <span style="color: dimgrey;"><b>'{{ event.notes }}'</b></span></p>
                 {% endif %}
                 <br/><br/>
             </div>

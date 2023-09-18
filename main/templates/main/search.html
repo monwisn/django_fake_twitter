@@ -42,10 +42,11 @@
                                         <a href="{% url 'main:tweet_like' tweet.id %}">
                                             <i class="fa fa-heart-o" style="color: red"></i></a> <!-- like -->
                                     {% endif %}&nbsp;
-                                <a href="{% url 'main:tweet_show' tweet.id %}">
-                                    <i class="fa-solid fa-share" style="color: grey"></i></a> <!-- share -->
-                                &nbsp;&nbsp;{% if request.user.id == tweet.user.profile.user_id %}
-    {#                                <i class="fa-solid fa-trash" style="color: red"></i>#}
+                                    <a href="{% url 'main:tweet_show' tweet.id %}">
+                                        <i class="fa-solid fa-share" style="color: grey"></i></a> <!-- share -->
+                                    &nbsp;&nbsp;
+                                    {% if request.user.id == tweet.user.profile.user_id %}
+{#                                    <i class="fa-solid fa-trash" style="color: red"></i>#}
                                     <a href="{% url 'main:edit_tweet' tweet.id %}">
                                         <i class="fa fa-edit" aria-hidden="true" style="color: dodgerblue"></i></a>&nbsp;&nbsp;
                                     <a href="{% url 'main:delete_tweet' tweet.id %}">

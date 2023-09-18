@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "schedule",
     "bootstrap_datepicker_plus",
     "sorl.thumbnail",
-
 ]
 
 MIDDLEWARE = [
