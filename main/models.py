@@ -19,7 +19,7 @@ class Profile(models.Model):
     instagram_link = models.CharField(null=True, blank=True, max_length=100)
     linkedin_link = models.CharField(null=True, blank=True, max_length=100)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.username
 
     # def save(self, *args, **kwargs):
@@ -60,7 +60,7 @@ class Book(models.Model):
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
 
@@ -99,7 +99,7 @@ class Tweet(models.Model):
         return truncatechars(self.body, 100)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.user}'
 
     # def __str__(self):
