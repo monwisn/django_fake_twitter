@@ -516,9 +516,9 @@ def unfollow(request, pk):
 
 def follow(request, pk):
     if request.user.is_authenticated:
-        # get the profile to unfollow
+        # get the profile to follow
         profile = Profile.objects.get(user_id=pk)
-        # unfollow the user
+        # follow the user
         request.user.profile.follows.add(profile)
         # save our profile
         request.user.profile.save()

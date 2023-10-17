@@ -65,11 +65,11 @@
                                 <a href="{% url 'main:tweet_show' tweet.id %}">
                                     <i class="fa-solid fa-share" style="color: grey"></i></a> <!-- share -->
                             &nbsp;&nbsp;{% if request.user.id == tweet.user.profile.user_id %}
-{#                                <i class="fa-solid fa-trash" style="color: red"></i>#}
                                 <a href="{% url 'main:edit_tweet' tweet.id %}">
-                                    <i class="fa fa-edit" aria-hidden="true" style="color: dodgerblue"></i></a>&nbsp;&nbsp;
+                                    <i class="fa fa-edit" aria-hidden="true" style="color: dodgerblue"></i></a>&nbsp;&nbsp;<!-- edit -->
                                 <a href="{% url 'main:delete_tweet' tweet.id %}">
-                                    <i class="fa fa-trash" aria-hidden="true" style="color: red"></i></a>
+                                    <i class="fa fa-trash" aria-hidden="true" style="color: red"></i>
+{#                                    <i class="fa-solid fa-trash" style="color: red"></i>#}</a> <!-- delete -->
                             {% endif %}
                             </small>
                         </div><br/>
@@ -96,4 +96,5 @@
                     </p>
                 </div>
             </footer>
+    {% include 'main/cookies.html' %}
 {% endblock %}

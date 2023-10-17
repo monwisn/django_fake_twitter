@@ -33,8 +33,8 @@ class SignUpForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True, label='Password Confirmation:')
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        help_text='<small class="text-muted"><em>Use following format: DD-MM-YYYY  (Optional)</em></small>', required=False,
-        label='Date of Birth:')
+        help_text='<small class="text-muted"><em>Use following format: DD-MM-YYYY  (Optional)</em></small>',
+        required=False, label='Date of Birth:')
 
     class Meta:
         model = User
