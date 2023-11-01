@@ -83,3 +83,9 @@ a {
   /*color: #17a2b8;*/
   color: deepskyblue;
 }
+
+.sticky-cal{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}

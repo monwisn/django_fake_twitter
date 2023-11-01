@@ -248,7 +248,7 @@ def event(request, event_id=None):
 
 
 def show_events(request, event_id=None):
-    instance = Event()
+    # instance = Event()
     if event_id:
         instance = get_object_or_404(Event, pk=event_id)
     else:
