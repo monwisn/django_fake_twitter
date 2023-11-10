@@ -111,6 +111,7 @@ class EventListView(ListView):
 
     template_name = "reservation/event-list.html"
     model = CalendarEvent
+    paginate_by = 15
 
     def get_queryset(self):
         return CalendarEvent.objects.get_all_events().order_by('-start_time')
@@ -122,6 +123,7 @@ class RunningEventListView(ListView):
 
     template_name = "reservation/event-list.html"
     model = CalendarEvent
+    paginate_by = 15
 
     def get_queryset(self):
         return CalendarEvent.objects.get_running_events().order_by('-start_time')

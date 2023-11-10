@@ -20,6 +20,7 @@ from blog.models import Post
 from main.forms import AddForm, SignUpForm, TweetForm, ProfileUpdateForm, ChangePasswordForm
 from main.models import Profile, Book, Tweet, Chat
 from main.common import UserAccessMixin
+from djblogger.pagination import paginate_queryset
 
 import openai
 
@@ -354,8 +355,9 @@ def clear_chat(request):
 def profile_list(request):
     if request.user.is_authenticated:
         profiles = Profile.objects.all()
+        page_obj = paginate_queryset(request, profiles, 8)
         # profiles = Profile.objects.exclude(user=request.user)
-        return render(request, 'main/profile_list.html', {'profiles': profiles})
+        return render(request, 'main/profile_list.html', {'profiles': page_obj, 'page_obj': page_obj})
     else:
         messages.info(request, 'You Must Be Logged In To View This Page...')
         return redirect('main:home')
